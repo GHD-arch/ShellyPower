@@ -1,0 +1,69 @@
+{
+  "format": 1,
+  "restore": {
+    "E:\\DEV\\AstroToggle\\AstroToggle\\ShellyPower\\NINA.ShellyPower.csproj": {}
+  },
+  "projects": {
+    "E:\\DEV\\AstroToggle\\AstroToggle\\ShellyPower\\NINA.ShellyPower.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "E:\\DEV\\AstroToggle\\AstroToggle\\ShellyPower\\NINA.ShellyPower.csproj",
+        "projectName": "NINA.ShellyPower",
+        "projectPath": "E:\\DEV\\AstroToggle\\AstroToggle\\ShellyPower\\NINA.ShellyPower.csproj",
+        "packagesPath": "E:\\DEV\\AstroToggle\\AstroToggle\\ShellyPower\\.nuget",
+        "outputPath": "E:\\DEV\\AstroToggle\\AstroToggle\\ShellyPower\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "E:\\DEV\\AstroToggle\\AstroToggle\\ShellyPower\\AppData\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0-windows"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0-windows7.0": {
+            "targetAlias": "net8.0-windows",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0-windows7.0": {
+          "targetAlias": "net8.0-windows",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            },
+            "Microsoft.WindowsDesktop.App.WPF": {
+              "privateAssets": "none"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.424/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

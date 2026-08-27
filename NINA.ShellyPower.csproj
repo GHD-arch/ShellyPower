@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Plugin NINA 3.x (net8.0-windows) pour piloter des prises Shelly.
+    Compilation : référence directement les assemblies installées de NINA
+    (dossier d'installation, Private=false -> non copiées dans la sortie).
+
+    Pour compiler avec le SDK .NET :
+      dotnet build -c Release
+  -->
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>NINA.ShellyPower</AssemblyName>
+    <RootNamespace>NINA.ShellyPower</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <NinaInstallDir Condition="'$(NinaInstallDir)'==''">C:\Program Files\N.I.N.A. - Nighttime Imaging 'N' Astronomy</NinaInstallDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- References NINA (Private=false : NINA fournit ces assemblies au chargement). -->
+    <Reference Include="NINA.Core"><HintPath>$(NinaInstallDir)\NINA.Core.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="NINA"><HintPath>$(NinaInstallDir)\NINA.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="NINA.Equipment"><HintPath>$(NinaInstallDir)\NINA.Equipment.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="NINA.Plugin"><HintPath>$(NinaInstallDir)\NINA.Plugin.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="NINA.Profile"><HintPath>$(NinaInstallDir)\NINA.Profile.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="NINA.Sequencer"><HintPath>$(NinaInstallDir)\NINA.Sequencer.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="NINA.WPF.Base"><HintPath>$(NinaInstallDir)\NINA.WPF.Base.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="NINA.Astrometry"><HintPath>$(NinaInstallDir)\NINA.Astrometry.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="NINA.Image"><HintPath>$(NinaInstallDir)\NINA.Image.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="NINA.PlateSolving"><HintPath>$(NinaInstallDir)\NINA.PlateSolving.dll</HintPath><Private>false</Private></Reference>
+    <!-- Tiers fournis par NINA. -->
+    <Reference Include="Newtonsoft.Json"><HintPath>$(NinaInstallDir)\Newtonsoft.Json.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="CommunityToolkit.Mvvm"><HintPath>$(NinaInstallDir)\CommunityToolkit.Mvvm.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="System.ComponentModel.Composition"><HintPath>$(NinaInstallDir)\System.ComponentModel.Composition.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+
+</Project>
