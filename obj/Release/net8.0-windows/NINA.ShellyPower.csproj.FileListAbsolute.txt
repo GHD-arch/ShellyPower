@@ -9,6 +9,7 @@ E:\DEV\AstroToggle\AstroToggle\ShellyPower\obj\Release\net8.0-windows\Resources\
 E:\DEV\AstroToggle\AstroToggle\ShellyPower\obj\Release\net8.0-windows\NINA.ShellyPower.g.resources
 E:\DEV\AstroToggle\AstroToggle\ShellyPower\obj\Release\net8.0-windows\NINA.ShellyPower.GeneratedMSBuildEditorConfig.editorconfig
 E:\DEV\AstroToggle\AstroToggle\ShellyPower\obj\Release\net8.0-windows\NINA.ShellyPower.csproj.CoreCompileInputs.cache
+E:\DEV\AstroToggle\AstroToggle\ShellyPower\obj\Release\net8.0-windows\NINA.ShellyPower.sourcelink.json
 E:\DEV\AstroToggle\AstroToggle\ShellyPower\obj\Release\net8.0-windows\NINA.ShellyPower.dll
 E:\DEV\AstroToggle\AstroToggle\ShellyPower\obj\Release\net8.0-windows\refint\NINA.ShellyPower.dll
 E:\DEV\AstroToggle\AstroToggle\ShellyPower\obj\Release\net8.0-windows\NINA.ShellyPower.pdb

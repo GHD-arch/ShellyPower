@@ -17,14 +17,14 @@ using System.Runtime.InteropServices;
 //                           -> AssemblyMetadataAttribute (clés ci-dessous)
 // ---------------------------------------------------------------------------
 [assembly: AssemblyTitle("Shelly Power")]
-[assembly: AssemblyCompany("Gerard")]
+[assembly: AssemblyCompany("Gérard Hurtaud")]
 [assembly: AssemblyDescription("Contrôle de prises connectées Shelly (4 prises nommées) dans NINA.")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
 [assembly: AssemblyMetadata("License", "MIT")]
 [assembly: AssemblyMetadata("LicenseURL", "https://opensource.org/licenses/MIT")]
-[assembly: AssemblyMetadata("Homepage", "https://github.com/AstroToggle")]
-[assembly: AssemblyMetadata("Repository", "https://github.com/AstroToggle")]
+[assembly: AssemblyMetadata("Homepage", "https://github.com/GHD-arch/ShellyPower")]
+[assembly: AssemblyMetadata("Repository", "https://github.com/GHD-arch/ShellyPower")]
 [assembly: AssemblyMetadata("Tags", "Shelly,Power,Switch")]
 [assembly: AssemblyMetadata("MinimumApplicationVersion", "3.0.0.0")]
 [assembly: AssemblyMetadata("LongDescription", "Contrôle de prises connectées Shelly (4 prises nommées) dans NINA : équipement switch, instructions de séquenceur ON/OFF et panneau de configuration.")]

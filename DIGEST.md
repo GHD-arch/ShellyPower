@@ -1,7 +1,8 @@
 # DIGEST — Historique de développement du plugin Shelly Power
 
-**Projet** : NINA.ShellyPower · **Version** : 1.0.0 · **Auteur** : Gerard
-**Date** : 27 août 2026 · **NINA** : 3.2.0.9001 · **SDK** : .NET 8.0.424
+**Projet** : NINA.ShellyPower · **Version** : 1.0.0 · **Auteur** : Gérard Hurtaud
+**Date** : 28 août 2026 · **NINA** : 3.2.0.9001 · **SDK** : .NET 8.0.424
+**GitHub** : https://github.com/GHD-arch/ShellyPower
 
 ---
 

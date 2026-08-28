@@ -1,7 +1,7 @@
 # AFAIRE — Améliorations futures et versionning
 
-**Projet** : NINA.ShellyPower · **Version actuelle** : 1.0.0 · **Auteur** : Gerard
-**Date** : 27 août 2026
+**Projet** : NINA.ShellyPower · **Version actuelle** : 1.0.0 · **Auteur** : Gérard Hurtaud
+**Date** : 28 août 2026 · **GitHub** : https://github.com/GHD-arch/ShellyPower
 
 ---
 
