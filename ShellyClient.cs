@@ -1,5 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -59,22 +61,67 @@ namespace NINA.ShellyPower
     public class ShellyClient
     {
         private const int CacheTtlSeconds = 2;
+        private const int RequestTimeoutSeconds = 2;
 
         private readonly HttpClient _http;
 
         private static readonly ConcurrentDictionary<string, (DateTime Time, ShellyTestResult Result)> _cache
             = new ConcurrentDictionary<string, (DateTime Time, ShellyTestResult Result)>(StringComparer.OrdinalIgnoreCase);
 
+        private static readonly object _prefetchLock = new object();
+        private static DateTime _lastPrefetch = DateTime.MinValue;
+
         public ShellyClient()
         {
             _http = new HttpClient
             {
-                Timeout = TimeSpan.FromSeconds(5)
+                Timeout = TimeSpan.FromSeconds(RequestTimeoutSeconds)
             };
         }
 
         /// <summary>URL du relais Gen1 (pour débogage).</summary>
         public static string RelayUrl(string ip) => $"http://{ip}/relay/0";
+
+        /// <summary>
+        /// Pré-charge en arrière-plan les états de toutes les prises configurées, en
+        /// parallèle, pour réchauffer le cache. Appelé au début de chaque cycle de polling
+        /// NINA (lecture de hub.Switches) : les Poll() successifs (switch writable + compteur
+        /// de chaque prise) lisent alors le cache au lieu de bloquer séquentiellement.
+        /// Limité à une exécution par seconde.
+        /// </summary>
+        public static void Prefetch(IEnumerable<string> ips)
+        {
+            var list = ips.Where(ip => !string.IsNullOrWhiteSpace(ip)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+            if (list.Count == 0)
+            {
+                return;
+            }
+
+            lock (_prefetchLock)
+            {
+                if ((DateTime.UtcNow - _lastPrefetch).TotalSeconds < 1)
+                {
+                    return;
+                }
+
+                _lastPrefetch = DateTime.UtcNow;
+            }
+
+            var snapshot = list.ToArray();
+            Task.Run(() =>
+            {
+                try
+                {
+                    var client = new ShellyClient();
+                    var tasks = snapshot.Select(ip => client.GetStatusAsync(ip, force: true)).ToArray();
+                    Task.WhenAll(tasks).Wait();
+                }
+                catch
+                {
+                    // Le pré-chargement est best-effort : les Poll() feront leur propre requête.
+                }
+            });
+        }
 
         /// <summary>
         /// Lit l'état complet d'une prise (état ON/OFF + consommation).
@@ -84,7 +131,7 @@ namespace NINA.ShellyPower
         {
             if (string.IsNullOrWhiteSpace(ip))
             {
-                return new ShellyTestResult { Ok = false, Message = "Adresse IP vide" };
+                return new ShellyTestResult { Ok = false, Message = ShellyStrings.L("Adresse IP vide", "Empty IP address") };
             }
 
             var key = ip.Trim();
@@ -150,13 +197,13 @@ namespace NINA.ShellyPower
                 catch
                 {
                     result.Ok = false;
-                    result.Message = $"Injoignable ({ip})";
+                    result.Message = ShellyStrings.L("Injoignable", "Unreachable") + " (" + ip + ")";
                 }
             }
 
             if (result.Ok)
             {
-                var state = result.IsOn == null ? "" : $" — prise {(result.IsOn.Value ? "allumée" : "éteinte")}";
+                var state = result.IsOn == null ? "" : $" — {ShellyStrings.L("prise", "plug")} {(result.IsOn.Value ? ShellyStrings.L("allumée", "on") : ShellyStrings.L("éteinte", "off"))}";
                 var power = result.PowerW > 0 ? $" — {result.PowerW:0.#} W" : "";
                 result.Message = $"OK{(device != null ? $" — {device}" : "")}{state}{power}";
             }
@@ -254,14 +301,14 @@ namespace NINA.ShellyPower
         {
             if (string.IsNullOrWhiteSpace(ip))
             {
-                return new ShellyTestResult { Ok = false, Message = "Adresse IP vide" };
+                return new ShellyTestResult { Ok = false, Message = ShellyStrings.L("Adresse IP vide", "Empty IP address") };
             }
 
             var result = await GetStatusAsync(ip, true, ct);
             if (result.Ok)
             {
                 result.Message = "OK" + (result.Device != null ? $" — {result.Device}" : "")
-                    + (result.IsOn == null ? "" : $" — prise {(result.IsOn.Value ? "allumée" : "éteinte")}")
+                    + (result.IsOn == null ? "" : $" — {ShellyStrings.L("prise", "plug")} {(result.IsOn.Value ? ShellyStrings.L("allumée", "on") : ShellyStrings.L("éteinte", "off"))}")
                     + (result.PowerW > 0 ? $" — {result.PowerW:0.#} W" : "");
             }
 

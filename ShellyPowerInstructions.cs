@@ -117,7 +117,9 @@ namespace NINA.ShellyPower
             Issues.Clear();
             if (string.IsNullOrWhiteSpace(GetPlugIp()))
             {
-                Issues.Add($"Prise {SelectedPlugIndex + 1} : aucune adresse IP configurée.");
+                Issues.Add(ShellyStrings.L(
+                    $"Prise {SelectedPlugIndex + 1} : aucune adresse IP configurée.",
+                    $"Plug {SelectedPlugIndex + 1}: no IP address configured."));
                 return false;
             }
 
@@ -126,14 +128,46 @@ namespace NINA.ShellyPower
 
         private static System.Windows.Media.GeometryGroup BuildIcon()
         {
-            // Icône simple (rectangles) pour l'arbre de séquence. Figée (Freeze) car la classe
-            // est instanciée par MEF sur un thread d'arrière-plan : un Freezable non figé
-            // provoquerait une exception d'affinité de thread au rendu WPF.
+            // Icône « bouton power » (⏻) : cercle ouvert 270° + tige verticale.
+            // Construite en géométrie vectorielle pure, figée (Freeze) car la classe est
+            // instanciée par MEF sur un thread d'arrière-plan.
+            //
+            // Cercle : centre (8,8), rayon extérieur 6.5, rayon intérieur 4.5, gap 90° en haut.
+            // Tige : rectangle 1.5px de large, du sommet du cercle vers le centre.
+
+            var cos45 = 0.7071;
+            var ro = 6.5; // rayon extérieur
+            var ri = 4.5; // rayon intérieur
+
+            // Anneau ouvert (270°) — contournement du cercle avec gap en haut
+            var ring = new System.Windows.Media.PathGeometry();
+            var fig = new System.Windows.Media.PathFigure
+            {
+                StartPoint = new System.Windows.Point(8 - ro * cos45, 8 - ro * cos45),
+                IsClosed = true,
+            };
+            // Arc extérieur 270° (sens horaire)
+            fig.Segments.Add(new System.Windows.Media.ArcSegment(
+                new System.Windows.Point(8 + ro * cos45, 8 - ro * cos45),
+                new System.Windows.Size(ro, ro), 0, true,
+                System.Windows.Media.SweepDirection.Clockwise, true));
+            // Ligne vers l'arc intérieur
+            fig.Segments.Add(new System.Windows.Media.LineSegment(
+                new System.Windows.Point(8 + ri * cos45, 8 - ri * cos45), true));
+            // Arc intérieur 270° (sens anti-horaire)
+            fig.Segments.Add(new System.Windows.Media.ArcSegment(
+                new System.Windows.Point(8 - ri * cos45, 8 - ri * cos45),
+                new System.Windows.Size(ri, ri), 0, true,
+                System.Windows.Media.SweepDirection.Counterclockwise, true));
+            ring.Figures.Add(fig);
+
+            // Tige verticale (du sommet vers le centre)
+            var stem = new System.Windows.Media.RectangleGeometry(
+                new System.Windows.Rect(7.25, 1, 1.5, 6));
+
             var group = new System.Windows.Media.GeometryGroup();
-            group.Children.Add(new System.Windows.Media.RectangleGeometry(
-                new System.Windows.Rect(0, 0, 16, 8)));
-            group.Children.Add(new System.Windows.Media.RectangleGeometry(
-                new System.Windows.Rect(4, 8, 8, 8)));
+            group.Children.Add(ring);
+            group.Children.Add(stem);
             group.Freeze();
             return group;
         }
@@ -216,7 +250,7 @@ namespace NINA.ShellyPower
             var combo = new System.Windows.FrameworkElementFactory(typeof(System.Windows.Controls.ComboBox));
             combo.SetValue(System.Windows.Controls.ComboBox.MinWidthProperty, 120.0);
             combo.SetValue(System.Windows.Controls.ComboBox.VerticalAlignmentProperty, System.Windows.VerticalAlignment.Center);
-            combo.SetValue(System.Windows.FrameworkElement.ToolTipProperty, "Prise à piloter");
+            combo.SetValue(System.Windows.FrameworkElement.ToolTipProperty, ShellyStrings.L("Prise à piloter", "Plug to control"));
             combo.SetBinding(System.Windows.Controls.ComboBox.ItemsSourceProperty, new System.Windows.Data.Binding("PlugNames"));
             combo.SetBinding(System.Windows.Controls.ComboBox.SelectedIndexProperty,
                 new System.Windows.Data.Binding("SelectedPlugIndex") { Mode = System.Windows.Data.BindingMode.TwoWay });
@@ -230,7 +264,7 @@ namespace NINA.ShellyPower
     /// <summary>Instruction de séquenceur : allumer une prise Shelly.</summary>
     [Export(typeof(ISequenceItem))]
     [ExportMetadata("Name", "Shelly Power On")]
-    [ExportMetadata("Description", "Allume une prise Shelly configurée.")]
+    [ExportMetadata("Description", "Turns on a configured Shelly plug.")]
     [ExportMetadata("Icon", "ButtonSVG")]
     [ExportMetadata("Category", "Shelly Power")]
     [JsonObject(MemberSerialization.OptIn)]
@@ -242,7 +276,7 @@ namespace NINA.ShellyPower
         public ShellyPowerOnInstruction(IProfileService profileService) : base(profileService)
         {
             Category = "Shelly Power";
-            Description = "Allume une prise Shelly configurée.";
+            Description = ShellyStrings.L("Allume une prise Shelly configurée.", "Turns on a configured Shelly plug.");
         }
 
         public ShellyPowerOnInstruction(ShellyPowerOnInstruction cloneMe) : base(cloneMe)
@@ -256,13 +290,19 @@ namespace NINA.ShellyPower
             var ip = GetPlugIp();
             if (string.IsNullOrWhiteSpace(ip))
             {
-                throw new InvalidOperationException($"Prise {SelectedPlugIndex + 1} non configurée (IP manquante).");
+                throw new InvalidOperationException(ShellyStrings.L(
+                    $"Prise {SelectedPlugIndex + 1} non configurée (IP manquante).",
+                    $"Plug {SelectedPlugIndex + 1} not configured (missing IP)."));
             }
 
-            progress?.Report(new ApplicationStatus { Status = $"Allumage Shelly '{GetPlugName()}' ({ip})..." });
+            progress?.Report(new ApplicationStatus { Status = ShellyStrings.L(
+                $"Allumage Shelly '{GetPlugName()}' ({ip})...",
+                $"Turning Shelly '{GetPlugName()}' on ({ip})...") });
             var client = new ShellyClient();
             await client.TurnOnAsync(ip, token);
-            progress?.Report(new ApplicationStatus { Status = $"Shelly '{GetPlugName()}' allumée." });
+            progress?.Report(new ApplicationStatus { Status = ShellyStrings.L(
+                $"Shelly '{GetPlugName()}' allumée.",
+                $"Shelly '{GetPlugName()}' turned on.") });
         }
 
         public override string ToString() => $"Shelly Power On: {GetPlugName()}";
@@ -271,7 +311,7 @@ namespace NINA.ShellyPower
     /// <summary>Instruction de séquenceur : éteindre une prise Shelly.</summary>
     [Export(typeof(ISequenceItem))]
     [ExportMetadata("Name", "Shelly Power Off")]
-    [ExportMetadata("Description", "Éteint une prise Shelly configurée.")]
+    [ExportMetadata("Description", "Turns off a configured Shelly plug.")]
     [ExportMetadata("Icon", "ButtonSVG")]
     [ExportMetadata("Category", "Shelly Power")]
     [JsonObject(MemberSerialization.OptIn)]
@@ -283,7 +323,7 @@ namespace NINA.ShellyPower
         public ShellyPowerOffInstruction(IProfileService profileService) : base(profileService)
         {
             Category = "Shelly Power";
-            Description = "Éteint une prise Shelly configurée.";
+            Description = ShellyStrings.L("Éteint une prise Shelly configurée.", "Turns off a configured Shelly plug.");
         }
 
         public ShellyPowerOffInstruction(ShellyPowerOffInstruction cloneMe) : base(cloneMe)
@@ -297,13 +337,19 @@ namespace NINA.ShellyPower
             var ip = GetPlugIp();
             if (string.IsNullOrWhiteSpace(ip))
             {
-                throw new InvalidOperationException($"Prise {SelectedPlugIndex + 1} non configurée (IP manquante).");
+                throw new InvalidOperationException(ShellyStrings.L(
+                    $"Prise {SelectedPlugIndex + 1} non configurée (IP manquante).",
+                    $"Plug {SelectedPlugIndex + 1} not configured (missing IP)."));
             }
 
-            progress?.Report(new ApplicationStatus { Status = $"Extinction Shelly '{GetPlugName()}' ({ip})..." });
+            progress?.Report(new ApplicationStatus { Status = ShellyStrings.L(
+                $"Extinction Shelly '{GetPlugName()}' ({ip})...",
+                $"Turning Shelly '{GetPlugName()}' off ({ip})...") });
             var client = new ShellyClient();
             await client.TurnOffAsync(ip, token);
-            progress?.Report(new ApplicationStatus { Status = $"Shelly '{GetPlugName()}' éteinte." });
+            progress?.Report(new ApplicationStatus { Status = ShellyStrings.L(
+                $"Shelly '{GetPlugName()}' éteinte.",
+                $"Shelly '{GetPlugName()}' turned off.") });
         }
 
         public override string ToString() => $"Shelly Power Off: {GetPlugName()}";

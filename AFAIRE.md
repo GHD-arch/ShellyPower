@@ -1,6 +1,6 @@
-# AFAIRE — Améliorations futures et versionning
+﻿# AFAIRE — Améliorations futures et versionning
 
-**Projet** : NINA.ShellyPower · **Version actuelle** : 1.0.0 · **Auteur** : Gérard Hurtaud
+**Projet** : NINA.ShellyPower · **Version actuelle** : 1.2.0 · **Auteur** : Gérard Hurtaud
 **Date** : 28 août 2026 · **GitHub** : https://github.com/GHD-arch/ShellyPower
 
 ---
@@ -9,32 +9,34 @@
 
 | Version | Statut | Description |
 |---|---|---|
-| **1.0.0** | ✅ Actuelle | Version stable fonctionnelle |
-| 1.0.1 | À faire | Correctifs (voir ci-dessous) |
-| 1.1.0 | Planifié | Nouvelles fonctionnalités (voir ci-dessous) |
+| **1.0.0** | ✅ Livrée | Version stable fonctionnelle |
+| **1.1.0** | ✅ Livrée | Icône, internationalisation, noms de prises bilingues, pied de page corrigé |
+| **1.2.0** | ✅ Actuelle | Correctifs : polling non bloquant |
+| 1.3.0 | Planifié | Correctifs restants (voir ci-dessous) |
+| 1.3.0 | Planifié | Nouvelles fonctionnalités (voir ci-dessous) |
 | 2.0.0 | Futur | Breaking changes (refactoring majeur) |
 
 ### Comment versionner
-1. Modifier `AssemblyFileVersion` dans `AssemblyInfo.cs` (4 segments : `1.0.1.0`)
-2. Mettre à jour la version dans `README.md` et `DIGEST.md`
+1. Modifier `AssemblyFileVersion` dans `AssemblyInfo.cs` (4 segments : `1.2.0.0`)
+2. Mettre à jour la version dans `README_FR.md`, `README_EN.md` et `DIGEST.md`
 3. `dotnet build -c Release` → déployer le DLL
-4. Tag Git : `git tag v1.0.1` (si dépôt Git)
+4. Tag Git : `git tag v1.2.0` (si dépôt Git)
 
 ---
 
-## Correctifs (1.0.1)
+## Correctifs (1.3.0)
 
 | # | Description | Priorité |
 |---|---|---|
 | 1 | **ComboBox dans le séquenceur complet** : injecter les templates DataType dans les Resources du SequenceBlockView (pas du ContentPresenter) via un `DispatcherTimer` 100 ms après `Loaded`, pour laisser les bindings se résoudre avant l'injection + forcer la réévaluation | Haute |
-| 2 | **Polling non bloquant** : réduire le timeout HttpClient à 2 s et interroger les 4 prises en parallèle (au lieu de séquentiel) pour éviter 20 s de blocage si toutes injoignables | Moyenne |
+| 2 | ~~**Polling non bloquant**~~ — ✅ fait en 1.2.0 (timeout 2 s, pré-chargement parallèle via ShellyClient.Prefetch, rafraîchissement du panneau en Task.WhenAll) | — |
 | 3 | **Actualisation auto du panneau** : timer 10 s dans `ShellyPanelCore` pour rafraîchir l'état des prises configurées (au lieu du bouton manuel uniquement) | Moyenne |
 | 4 | **Garde-fou « PC »** : avertissement renforcé si le nom de la prise contient « PC » (risque de couper la machine qui fait tourner NINA) | Basse |
 | 5 | **Log des actions** : journaliser ON/OFF dans le log NINA (qui a allumé/éteint quoi, quand) | Basse |
 
 ---
 
-## Nouvelles fonctionnalités (1.1.0)
+## Nouvelles fonctionnalités (1.4.0)
 
 | # | Description | Intérêt |
 |---|---|---|
@@ -43,14 +45,15 @@
 | 3 | **Condition de séquence** : « Si prise allumée alors… » (`ISequenceCondition`) | Automatisation |
 | 4 | **Instruction Toggle** + **durée** (« allumer 10 min puis éteindre ») | Confort |
 | 5 | **Déclencheur** : couper automatiquement à la fin du safe-to-observe (`ISequenceTrigger`) | Automatisation |
-| 6 | **Icône SVG propre** pour le plugin (au lieu des rectangles gris) | Esthétique |
-| 7 | **Traduction anglaise** des libellés (via `Loc` de NINA) | Internationalisation |
-| 8 | **Export/import config** : partage entre profils ou machines | Confort |
-| 9 | **Prises individuelles** dans le sélecteur d'équipement (au lieu d'un hub unique) | Scalabilité |
+| 6 | **Export/import config** : partage entre profils ou machines | Confort |
+| 7 | **Prises individuelles** dans le sélecteur d'équipement (au lieu d'un hub unique) | Scalabilité |
+
+> ✅ **Fait en 1.1.0** : icône SVG propre (⏻), traduction anglaise des libellés (bilingue,
+> anglais par défaut), noms de prises bilingues avec migration.
 
 ---
 
-## Publication sur la galerie NINA (1.2.0+)
+## Publication sur la galerie NINA (2.0.0)
 
 | Étape | Description |
 |---|---|
@@ -90,4 +93,4 @@ Remplacer la boucle séquentielle `for i in 0..3: await client.GetStatusAsync(ip
 
 ---
 
-*Auteur : Gerard · Dernière mise à jour : 27 août 2026*
+*Auteur : Gérard Hurtaud · Dernière mise à jour : 28 août 2026*

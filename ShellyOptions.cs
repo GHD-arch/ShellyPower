@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NINA.Profile.Interfaces;
@@ -35,7 +35,23 @@ namespace NINA.ShellyPower
             _options = options;
         }
 
-        public string GetPlugName(int index) => _options.GetValueString($"{Prefix}_Plug{index}_Name", $"Prise {index + 1}");
+        /// <summary>
+        /// Nom par défaut bilingue d'une prise ("Plug 1" en anglais, "Prise 1" en français).
+        /// Les anciennes valeurs par défaut "Prise N" éventuellement persistées sont
+        /// remappées sur le libellé de la culture courante ; les noms personnalisés
+        /// (ex. "Alimentation") sont conservés tels quels.
+        /// </summary>
+        public string GetPlugName(int index)
+        {
+            var stored = _options.GetValueString($"{Prefix}_Plug{index}_Name", null);
+            if (string.IsNullOrWhiteSpace(stored) || stored == $"Prise {index + 1}")
+            {
+                return ShellyStrings.L($"Prise {index + 1}", $"Plug {index + 1}");
+            }
+
+            return stored;
+        }
+
         public void SetPlugName(int index, string value) => _options.SetValueString($"{Prefix}_Plug{index}_Name", value ?? "");
 
         public string GetPlugIp(int index) => _options.GetValueString($"{Prefix}_Plug{index}_Ip", "");

@@ -18,8 +18,8 @@ using System.Runtime.InteropServices;
 // ---------------------------------------------------------------------------
 [assembly: AssemblyTitle("Shelly Power")]
 [assembly: AssemblyCompany("Gérard Hurtaud")]
-[assembly: AssemblyDescription("Contrôle de prises connectées Shelly (4 prises nommées) dans NINA.")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyDescription("Control Shelly smart plugs (4 named plugs) from NINA.")]
+[assembly: AssemblyFileVersion("1.2.0.0")]
 
 [assembly: AssemblyMetadata("License", "MIT")]
 [assembly: AssemblyMetadata("LicenseURL", "https://opensource.org/licenses/MIT")]
@@ -27,4 +27,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyMetadata("Repository", "https://github.com/GHD-arch/ShellyPower")]
 [assembly: AssemblyMetadata("Tags", "Shelly,Power,Switch")]
 [assembly: AssemblyMetadata("MinimumApplicationVersion", "3.0.0.0")]
-[assembly: AssemblyMetadata("LongDescription", "Contrôle de prises connectées Shelly (4 prises nommées) dans NINA : équipement switch, instructions de séquenceur ON/OFF et panneau de configuration.")]
+[assembly: AssemblyMetadata("LongDescription", "Control Shelly smart plugs (4 named plugs) from NINA: switch equipment, sequencer ON/OFF instructions and a configuration panel.")]

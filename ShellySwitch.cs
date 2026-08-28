@@ -1,4 +1,4 @@
-﻿using NINA.Profile;
+using NINA.Profile;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -163,8 +163,8 @@ namespace NINA.ShellyPower
                 var owner = Application.Current?.MainWindow;
                 var answer = MessageBox.Show(
                     owner,
-                    $"Éteindre la prise « {Name} » ({_ip}) ?",
-                    "Shelly Power — Confirmation",
+                    ShellyStrings.L($"Éteindre la prise « {Name} » ({_ip}) ?", $"Turn off plug « {Name} » ({_ip}) ?"),
+                    ShellyStrings.L("Shelly Power — Confirmation", "Shelly Power — Confirmation"),
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Warning,
                     MessageBoxResult.No);
@@ -187,11 +187,13 @@ namespace NINA.ShellyPower
     {
         private readonly ICollection<ISwitch> _switches;
         private readonly IProfileService _profileService;
+        private readonly string[] _ips;
 
         public ShellySwitchHub(IReadOnlyList<ShellyPlugConfig> plugs, IProfileService profileService)
         {
             _profileService = profileService ?? throw new ArgumentNullException(nameof(profileService));
             var list = new List<ISwitch>();
+            var ips = new List<string>();
             for (var i = 0; i < ShellyOptions.PlugCount; i++)
             {
                 var plug = i < plugs.Count ? plugs[i] : new ShellyPlugConfig();
@@ -199,7 +201,7 @@ namespace NINA.ShellyPower
                 list.Add(new ShellySwitch(
                     (short)i,
                     plugName,
-                    string.IsNullOrWhiteSpace(plug.Ip) ? "Non configuré — cliquer sur l'engrenage Setup" : plug.Ip,
+                    string.IsNullOrWhiteSpace(plug.Ip) ? ShellyStrings.L("Non configuré — cliquer sur l'engrenage Setup", "Not configured — click the Setup gear") : plug.Ip,
                     plug.Ip,
                     plug.ProtectOff));
 
@@ -208,20 +210,34 @@ namespace NINA.ShellyPower
                 if (!string.IsNullOrWhiteSpace(plug.Ip))
                 {
                     list.Add(new ShellyPowerMeter((short)(100 + i), plugName + " (W)", plug.Ip));
+                    ips.Add(plug.Ip);
                 }
             }
 
+            _ips = ips.ToArray();
             _switches = new ReadOnlyCollection<ISwitch>(list);
         }
 
-        public ICollection<ISwitch> Switches => _switches;
+        /// <summary>
+        /// À chaque accès (début d'un cycle de polling NINA), pré-charge les états des
+        /// prises en arrière-plan et en parallèle : les Poll() de la même prise (switch +
+        /// compteur) et des autres prises lisent le cache au lieu de bloquer séquentiellement.
+        /// </summary>
+        public ICollection<ISwitch> Switches
+        {
+            get
+            {
+                ShellyClient.Prefetch(_ips);
+                return _switches;
+            }
+        }
 
         // ----- Implémentation d'IDevice (requise par ISwitchHub) -----
         public string Name => "Shelly Power";
         public string DisplayName => "Shelly Power";
         public string Id => "NINA.ShellyPower.Hub";
         public string Category => "Power";
-        public string Description => "4 prises connectées Shelly";
+        public string Description => ShellyStrings.L("4 prises connectées Shelly", "4 connected Shelly plugs");
         public bool Connected => true;
         public bool HasSetupDialog => true;
         public string DriverInfo => "Shelly Power plugin — configurer via l'engrenage Setup";
@@ -258,7 +274,7 @@ namespace NINA.ShellyPower
                 var vm = new ShellyOptionsVM(_profileService);
                 var window = new Window
                 {
-                    Title = "Shelly Power — Configuration et pilotage des 4 prises",
+                    Title = ShellyStrings.L("Shelly Power — Configuration et pilotage des 4 prises", "Shelly Power — Configuration and control of 4 plugs"),
                     Content = new ShellyOptionsView { DataContext = vm },
                     Width = 880,
                     MinHeight = 340,

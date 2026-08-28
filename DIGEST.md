@@ -1,8 +1,18 @@
-# DIGEST — Historique de développement du plugin Shelly Power
+﻿# DIGEST — Historique de développement du plugin Shelly Power
 
-**Projet** : NINA.ShellyPower · **Version** : 1.0.0 · **Auteur** : Gérard Hurtaud
+**Projet** : NINA.ShellyPower · **Version** : 1.2.0 · **Auteur** : Gérard Hurtaud
 **Date** : 28 août 2026 · **NINA** : 3.2.0.9001 · **SDK** : .NET 8.0.424
 **GitHub** : https://github.com/GHD-arch/ShellyPower
+
+## Mises à jour — Version 1.2.0 (28 août 2026)
+
+- **Polling non bloquant** :
+  - timeout HttpClient réduit de 5 s à **2 s** ;
+  - **pré-chargement parallèle** (ShellyClient.Prefetch) déclenché à chaque lecture de
+    hub.Switches (début du cycle de polling NINA) — les 4 prises sont interrogées
+    simultanément en arrière-plan pour réchauffer le cache statique (TTL 2 s) ;
+  - rafraîchissement du panneau (ShellyPanelCore.RefreshStatesAsync) en **parallèle**
+    (Task.WhenAll) : pire cas ~2 s au lieu de ~8 s.
 
 ---
 
@@ -89,6 +99,24 @@ panneau de configuration coloré, détection réseau, protection anti-coupure.
 | `ShellyDiscovery.cs` | Scan réseau /24 |
 | `ShellyDetectionWindow.cs` | Fenêtre de détection + attribution |
 | `ShellyPowerInstructions.cs` | Instructions On/Off + injection templates |
+| `ShellyStrings.cs` | Libellés bilingues (anglais par défaut, français si culture fr) |
 | `PluginResources.cs` | Export MEF ResourceDictionary (BAML différé) |
 | `Resources/Templates.xaml` | Templates XAML (dock + options + mini-séquenceur) |
 | `global.json` | Pinning SDK 8.0.424 |
+
+---
+
+## Mises à jour — Version 1.1.0 (28 août 2026)
+
+- **Icône propre** : symbole « power » (⏻) en géométrie vectorielle (anneau 270° + tige)
+  remplaçant les rectangles gris dans le séquenceur, le dock et les menus NINA.
+- **Internationalisation** : classe `ShellyStrings` (anglais par défaut, français si
+  culture UI `fr`) appliquée à tous les libellés du panneau, de la détection, des
+  instructions de séquenceur, des messages de progression, des confirmations
+  d'extinction et des états (on/off/unknown).
+- **Description du manifeste** passée en anglais (ShortDescription + LongDescription).
+- **Noms de prise par défaut bilingues** : « Plug 1 » (EN) / « Prise 1 » (FR), avec
+  migration des anciennes valeurs « Prise N » persistées.
+- **Pied de page du panneau** restructuré en StackPanel horizontal pleine largeur
+  (le bouton « Detect plugs » était tronqué par la colonne étroite du bouton Tester).
+- **Version** : 1.0.0 → 1.1.0 (AssemblyFileVersion).

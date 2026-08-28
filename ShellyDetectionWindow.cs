@@ -25,7 +25,7 @@ namespace NINA.ShellyPower
         {
             _core = core;
 
-            Title = "Shelly Power — Détection des prises sur le réseau";
+            Title = ShellyStrings.L("Shelly Power — Détection des prises sur le réseau", "Shelly Power — Detect plugs on the network");
             Width = 560;
             MinHeight = 220;
             SizeToContent = SizeToContent.Height;
@@ -42,7 +42,7 @@ namespace NINA.ShellyPower
             var top = new StackPanel { Orientation = Orientation.Horizontal };
             _scanButton = new Button
             {
-                Content = "Rechercher",
+                Content = ShellyStrings.L("Rechercher", "Search"),
                 Padding = new Thickness(12, 4, 12, 4)
             };
             _scanButton.Click += (s, e) => StartScan();
@@ -61,7 +61,7 @@ namespace NINA.ShellyPower
             // Ligne 1 : aide
             var help = new TextBlock
             {
-                Text = "Sélectionnez, pour chaque prise détectée, l'emplacement (Prise 1 à 4) où attribuer son adresse IP. Les noms déjà saisis sont conservés.",
+                Text = ShellyStrings.L("Sélectionnez, pour chaque prise détectée, l'emplacement (Prise 1 à 4) où attribuer son adresse IP. Les noms déjà saisis sont conservés.", "For each detected plug, select the slot (Plug 1 to 4) to assign its IP address. Existing names are kept."),
                 TextWrapping = TextWrapping.Wrap,
                 Margin = new Thickness(0, 8, 0, 8)
             };
@@ -87,7 +87,7 @@ namespace NINA.ShellyPower
         {
             _scanButton.IsEnabled = false;
             _rows.Children.Clear();
-            _status.Text = "Recherche des prises Shelly sur le réseau local…";
+            _status.Text = ShellyStrings.L("Recherche des prises Shelly sur le réseau local…", "Searching for Shelly plugs on the local network…");
 
             List<ShellyDiscoveredDevice> found;
             try
@@ -120,8 +120,8 @@ namespace NINA.ShellyPower
 
             _scanButton.IsEnabled = true;
             _status.Text = found.Count == 0
-                ? "Aucune prise Shelly détectée sur le réseau local."
-                : $"{found.Count} prise(s) détectée(s) :";
+                ? ShellyStrings.L("Aucune prise Shelly détectée sur le réseau local.", "No Shelly plug detected on the local network.")
+                : $"{found.Count} " + ShellyStrings.L("prise(s) détectée(s)", "plug(s) detected") + " :";
 
             foreach (var device in found)
             {
@@ -143,11 +143,11 @@ namespace NINA.ShellyPower
             row.Children.Add(label);
 
             var combo = new ComboBox { Width = 170, VerticalAlignment = VerticalAlignment.Center };
-            combo.Items.Add("— attribuer à…");
+            combo.Items.Add(ShellyStrings.L("— attribuer à…", "— assign to…"));
             for (var i = 0; i < ShellyOptions.PlugCount; i++)
             {
                 var ip = _core.GetPlugIpAt(i);
-                var occupied = string.IsNullOrWhiteSpace(ip) ? "" : " (configurée)";
+                var occupied = string.IsNullOrWhiteSpace(ip) ? "" : ShellyStrings.L(" (configurée)", " (configured)");
                 combo.Items.Add($"Prise {i + 1}{occupied}");
             }
 
@@ -170,7 +170,7 @@ namespace NINA.ShellyPower
                 }
 
                 _core.AssignDiscovered(slot, device.Ip);
-                _status.Text = $"Prise {slot + 1} ← {device.Ip} (sauvegardé)";
+                _status.Text = ShellyStrings.L($"Prise {slot + 1} ← {device.Ip} (sauvegardé)", $"Plug {slot + 1} ← {device.Ip} (saved)");
             };
 
             row.Children.Add(combo);

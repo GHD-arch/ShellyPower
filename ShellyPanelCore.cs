@@ -1,5 +1,6 @@
-﻿using NINA.Profile;
+using NINA.Profile;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -86,7 +87,7 @@ namespace NINA.ShellyPower
 
             _protectOff[index] = value;
             _options.SetPlugProtectOff(index, value);
-            StatusMessage = "Sauvegardé automatiquement";
+            StatusMessage = ShellyStrings.L("Sauvegardé automatiquement", "Auto-saved");
             return true;
         }
 
@@ -117,7 +118,7 @@ namespace NINA.ShellyPower
                 _options.SetPlugIp(index, value);
             }
 
-            StatusMessage = "Sauvegardé automatiquement";
+            StatusMessage = ShellyStrings.L("Sauvegardé automatiquement", "Auto-saved");
             return true;
         }
 
@@ -144,7 +145,7 @@ namespace NINA.ShellyPower
                 _options.SetPlugIp(i, _ips[i] ?? "");
             }
 
-            StatusMessage = "Enregistré ✓ (" + DateTime.Now.ToString("HH:mm:ss") + ")";
+            StatusMessage = ShellyStrings.L("Enregistré ✓ (", "Saved ✓ (") + DateTime.Now.ToString("HH:mm:ss") + ")";
         }
 
         private async System.Threading.Tasks.Task TestAsync(int index)
@@ -152,11 +153,11 @@ namespace NINA.ShellyPower
             var ip = _ips[index];
             if (string.IsNullOrWhiteSpace(ip))
             {
-                SetResult(index, "✖ Saisissez d'abord l'adresse IP de cette prise");
+                SetResult(index, ShellyStrings.L("✖ Saisissez d'abord l'adresse IP de cette prise", "✖ Enter the IP address of this plug first"));
                 return;
             }
 
-            SetResult(index, "… test en cours");
+            SetResult(index, ShellyStrings.L("… test en cours", "… testing…"));
             var result = await new ShellyClient().TestAsync(ip);
             _power[index] = result.Ok ? result.PowerW : null;
             SetResult(index, (result.Ok ? "✔ " : "✖ ") + result.Message);
@@ -177,8 +178,10 @@ namespace NINA.ShellyPower
             }
 
             var state = _states[index] == null
-                ? "inconnu"
-                : (_states[index].Value ? "● allumée" : "○ éteinte");
+                ? ShellyStrings.L("inconnu", "unknown")
+                : (_states[index].Value
+                    ? ShellyStrings.L("● allumée", "● on")
+                    : ShellyStrings.L("○ éteinte", "○ off"));
 
             if (_power[index] != null && _power[index] > 0)
             {
@@ -193,7 +196,7 @@ namespace NINA.ShellyPower
             var ip = _ips[index];
             if (string.IsNullOrWhiteSpace(ip))
             {
-                SetResult(index, "✖ Configurez d'abord l'adresse IP de cette prise");
+                SetResult(index, ShellyStrings.L("✖ Configurez d'abord l'adresse IP de cette prise", "✖ Configure the IP address of this plug first"));
                 return;
             }
 
@@ -201,19 +204,21 @@ namespace NINA.ShellyPower
             {
                 var plugName = string.IsNullOrWhiteSpace(_names[index]) ? $"Prise {index + 1}" : _names[index];
                 var answer = System.Windows.MessageBox.Show(
-                    $"Éteindre la prise « {plugName} » ({ip}) ?",
-                    "Shelly Power — Confirmation",
+                    ShellyStrings.L($"Éteindre la prise « {plugName} » ({ip}) ?", $"Turn off plug « {plugName} » ({ip}) ?"),
+                    ShellyStrings.L("Shelly Power — Confirmation", "Shelly Power — Confirmation"),
                     System.Windows.MessageBoxButton.YesNo,
                     System.Windows.MessageBoxImage.Warning,
                     System.Windows.MessageBoxResult.No);
                 if (answer != System.Windows.MessageBoxResult.Yes)
                 {
-                    SetResult(index, "✖ Extinction annulée (protection)");
+                    SetResult(index, ShellyStrings.L("✖ Extinction annulée (protection)", "✖ Turn-off cancelled (protected)"));
                     return;
                 }
             }
 
-            SetResult(index, on ? "… allumage en cours" : "… extinction en cours");
+            SetResult(index, on
+                ? ShellyStrings.L("… allumage en cours", "… turning on…")
+                : ShellyStrings.L("… extinction en cours", "… turning off…"));
             try
             {
                 var client = new ShellyClient();
@@ -229,13 +234,13 @@ namespace NINA.ShellyPower
                 var status = await client.GetStatusAsync(ip, true);
                 _states[index] = status.IsOn;
                 _power[index] = status.Ok ? status.PowerW : null;
-                SetResult(index, status.Ok ? "✔ " + status.Message : "✖ Injoignable (" + ip + ")");
+                SetResult(index, status.Ok ? "✔ " + status.Message : "✖ " + ShellyStrings.L("Injoignable", "Unreachable") + " (" + ip + ")");
             }
             catch
             {
                 _states[index] = null;
                 _power[index] = null;
-                SetResult(index, "✖ Injoignable (" + ip + ")");
+                SetResult(index, "✖ " + ShellyStrings.L("Injoignable", "Unreachable") + " (" + ip + ")");
             }
 
             OnPropertyChanged($"Plug{index}State");
@@ -243,6 +248,8 @@ namespace NINA.ShellyPower
 
         private async System.Threading.Tasks.Task RefreshStatesAsync()
         {
+            var client = new ShellyClient();
+            var tasks = new List<System.Threading.Tasks.Task>();
             for (var i = 0; i < ShellyOptions.PlugCount; i++)
             {
                 if (string.IsNullOrWhiteSpace(_ips[i]))
@@ -250,13 +257,23 @@ namespace NINA.ShellyPower
                     continue;
                 }
 
-                SetResult(i, "… lecture de l'état");
-                var result = await new ShellyClient().TestAsync(_ips[i]);
-                _states[i] = result.IsOn;
-                _power[i] = result.Ok ? result.PowerW : null;
-                SetResult(i, result.Ok ? "✔ " + result.Message : "✖ " + result.Message);
-                OnPropertyChanged($"Plug{i}State");
+                var index = i;
+                SetResult(index, ShellyStrings.L("… lecture de l'état", "… reading state"));
+                tasks.Add(RefreshOneAsync(client, index));
             }
+
+            // Interrogation parallèle des 4 prises : les appels HTTP async s'exécutent en
+            // concurrence ; les continuations reviennent sur le thread UI (SynchronizationContext).
+            await System.Threading.Tasks.Task.WhenAll(tasks);
+        }
+
+        private async System.Threading.Tasks.Task RefreshOneAsync(ShellyClient client, int index)
+        {
+            var result = await client.TestAsync(_ips[index]);
+            _states[index] = result.IsOn;
+            _power[index] = result.Ok ? result.PowerW : null;
+            SetResult(index, result.Ok ? "✔ " + result.Message : "✖ " + result.Message);
+            OnPropertyChanged($"Plug{index}State");
         }
 
         // ----- Détection réseau -----

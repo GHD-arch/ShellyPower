@@ -1,6 +1,6 @@
-# NINA.ShellyPower — Plugin NINA 3.x pour prises connectées Shelly
+﻿# NINA.ShellyPower — Plugin NINA 3.x pour prises connectées Shelly
 
-**Version 1.0.0** · Auteur : **Gérard Hurtaud** · Licence : MIT
+**Version 1.2.0** · Auteur : **Gérard Hurtaud** · Licence : MIT
 · **GitHub** : https://github.com/GHD-arch/ShellyPower
 · NINA 3.0+ (testé 3.2.0.9001)
 
@@ -26,6 +26,10 @@ chacune avec son adresse IP.
 6. **Protection anti-coupure** — confirmation demandée avant toute extinction manuelle
    (toggle Équipement, bouton OFF du panneau). Le séquenceur n'est **pas** concerné
    (automatisation nocturne préservée).
+7. **Interface bilingue** — anglais par défaut (en-US/en-GB), français si la culture UI
+   de NINA est `fr` (tous les libellés, messages, confirmations et états).
+8. **Icône propre** — symbole « power » (⏻) en géométrie vectorielle dans le séquenceur,
+   le dock et les menus de NINA.
 
 ## Surfaces d'utilisation
 
@@ -43,6 +47,16 @@ chacune avec son adresse IP.
 - **NINA 3.x stable** (testé 3.2, .NET 8.0)
 - **SDK .NET 8.0** pour compiler (`dotnet build -c Release`)
 - Prises **Shelly Gen1** (API REST `/relay/0`) ou **Gen2/Gen3** (RPC `/rpc/Switch.*`)
+
+## Performances — polling non bloquant
+
+- Timeout HTTP réduit à **2 s** par requête.
+- **Pré-chargement parallèle** : au début de chaque cycle de polling NINA (lecture de
+  hub.Switches), les 4 prises sont interrogées **simultanément** en arrière-plan pour
+  réchauffer le cache — les Poll() successifs (switch + compteur de chaque prise) lisent
+  le cache au lieu de bloquer séquentiellement.
+- Rafraîchissement du panneau en **parallèle** (Task.WhenAll) : pire cas ~2 s au lieu
+  de ~8 s.
 
 ## Compilation
 
@@ -82,4 +96,4 @@ MIT.
 
 ---
 
-*Auteur : Gérard Hurtaud · GitHub : [GHD-arch/ShellyPower](https://github.com/GHD-arch/ShellyPower) · Version 1.0.0 · 28 août 2026*
+*Auteur : Gérard Hurtaud · GitHub : [GHD-arch/ShellyPower](https://github.com/GHD-arch/ShellyPower) · Version 1.2.0 · 28 août 2026*
