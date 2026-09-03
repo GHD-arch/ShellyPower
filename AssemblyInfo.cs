@@ -1,6 +1,5 @@
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.InteropServices;
-
 // GUID stable utilisé pour persister les options du plugin via NINA.Profile.PluginOptionsAccessor
 // et lu par PluginBase.Identifier.
 [assembly: Guid("8F6E4B2A-1C3D-4E5F-9A0B-C1D2E3F4A5B6")]
@@ -19,7 +18,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Shelly Power")]
 [assembly: AssemblyCompany("Gérard Hurtaud")]
 [assembly: AssemblyDescription("Control Shelly smart plugs (4 named plugs) from NINA.")]
-[assembly: AssemblyFileVersion("1.2.0.0")]
+[assembly: AssemblyFileVersion("1.4.0.0")]
 
 [assembly: AssemblyMetadata("License", "MIT")]
 [assembly: AssemblyMetadata("LicenseURL", "https://opensource.org/licenses/MIT")]

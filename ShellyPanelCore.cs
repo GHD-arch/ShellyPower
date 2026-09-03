@@ -29,6 +29,8 @@ namespace NINA.ShellyPower
         private readonly bool?[] _states = new bool?[ShellyOptions.PlugCount];
         private readonly double?[] _power = new double?[ShellyOptions.PlugCount];
         private string _statusMessage = "";
+        private bool _refreshing;
+        private readonly System.Windows.Threading.DispatcherTimer _autoRefresh;
 
         public ShellyPanelCore(IProfileService profileService)
         {
@@ -41,6 +43,24 @@ namespace NINA.ShellyPower
             OffCommand = new RelayCommandAsync(async i => await PowerAsync(i, false));
             RefreshCommand = new RelayCommandAsync(_ => RefreshStatesAsync());
             DetectCommand = new RelayCommand(_ => ShowDetectionWindow());
+
+            // Actualisation automatique de l'état des prises (15 s), dans le thread UI.
+            _autoRefresh = new System.Windows.Threading.DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(15)
+            };
+            _autoRefresh.Tick += async (s, e) => await AutoRefreshAsync();
+            _autoRefresh.Start();
+        }
+
+        private async System.Threading.Tasks.Task AutoRefreshAsync()
+        {
+            if (_refreshing)
+            {
+                return;
+            }
+
+            await RefreshStatesAsync();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -203,8 +223,14 @@ namespace NINA.ShellyPower
             if (!on && _protectOff[index])
             {
                 var plugName = string.IsNullOrWhiteSpace(_names[index]) ? $"Prise {index + 1}" : _names[index];
+                var isPc = IsPcPlug(plugName);
+                var message = isPc
+                    ? ShellyStrings.L(
+                        $"⚠ Attention : cette prise semble alimenter un ordinateur (« {plugName} »). L'éteindre peut couper la machine qui fait tourner NINA. Continuer ?",
+                        $"⚠ Warning: this plug may power a computer (« {plugName} »). Turning it off may cut the machine running NINA. Continue?")
+                    : ShellyStrings.L($"Éteindre la prise « {plugName} » ({ip}) ?", $"Turn off plug « {plugName} » ({ip}) ?");
                 var answer = System.Windows.MessageBox.Show(
-                    ShellyStrings.L($"Éteindre la prise « {plugName} » ({ip}) ?", $"Turn off plug « {plugName} » ({ip}) ?"),
+                    message,
                     ShellyStrings.L("Shelly Power — Confirmation", "Shelly Power — Confirmation"),
                     System.Windows.MessageBoxButton.YesNo,
                     System.Windows.MessageBoxImage.Warning,
@@ -235,6 +261,8 @@ namespace NINA.ShellyPower
                 _states[index] = status.IsOn;
                 _power[index] = status.Ok ? status.PowerW : null;
                 SetResult(index, status.Ok ? "✔ " + status.Message : "✖ " + ShellyStrings.L("Injoignable", "Unreachable") + " (" + ip + ")");
+                var plugName = string.IsNullOrWhiteSpace(_names[index]) ? $"Prise {index + 1}" : _names[index];
+                NINA.Core.Utility.Logger.Info($"Shelly Power: {(on ? "ON" : "OFF")} '{plugName}' ({ip}) → {(status.IsOn == true ? "ON" : "OFF")}");
             }
             catch
             {
@@ -246,25 +274,47 @@ namespace NINA.ShellyPower
             OnPropertyChanged($"Plug{index}State");
         }
 
+        /// <summary>Détection approximative d'une prise qui alimente un ordinateur (risque de couper la machine qui fait tourner NINA).</summary>
+        private static bool IsPcPlug(string plugName)
+        {
+            var name = plugName ?? "";
+            return name.Contains("pc", StringComparison.OrdinalIgnoreCase)
+                || name.Contains("ordi", StringComparison.OrdinalIgnoreCase)
+                || name.Contains("computer", StringComparison.OrdinalIgnoreCase);
+        }
+
         private async System.Threading.Tasks.Task RefreshStatesAsync()
         {
-            var client = new ShellyClient();
-            var tasks = new List<System.Threading.Tasks.Task>();
-            for (var i = 0; i < ShellyOptions.PlugCount; i++)
+            if (_refreshing)
             {
-                if (string.IsNullOrWhiteSpace(_ips[i]))
-                {
-                    continue;
-                }
-
-                var index = i;
-                SetResult(index, ShellyStrings.L("… lecture de l'état", "… reading state"));
-                tasks.Add(RefreshOneAsync(client, index));
+                return;
             }
 
-            // Interrogation parallèle des 4 prises : les appels HTTP async s'exécutent en
-            // concurrence ; les continuations reviennent sur le thread UI (SynchronizationContext).
-            await System.Threading.Tasks.Task.WhenAll(tasks);
+            _refreshing = true;
+            try
+            {
+                var client = new ShellyClient();
+                var tasks = new List<System.Threading.Tasks.Task>();
+                for (var i = 0; i < ShellyOptions.PlugCount; i++)
+                {
+                    if (string.IsNullOrWhiteSpace(_ips[i]))
+                    {
+                        continue;
+                    }
+
+                    var index = i;
+                    SetResult(index, ShellyStrings.L("… lecture de l'état", "… reading state"));
+                    tasks.Add(RefreshOneAsync(client, index));
+                }
+
+                // Interrogation parallèle des 4 prises : les appels HTTP async s'exécutent en
+                // concurrence ; les continuations reviennent sur le thread UI (SynchronizationContext).
+                await System.Threading.Tasks.Task.WhenAll(tasks);
+            }
+            finally
+            {
+                _refreshing = false;
+            }
         }
 
         private async System.Threading.Tasks.Task RefreshOneAsync(ShellyClient client, int index)

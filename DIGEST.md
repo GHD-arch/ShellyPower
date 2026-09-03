@@ -1,8 +1,31 @@
 ﻿# DIGEST — Historique de développement du plugin Shelly Power
 
-**Projet** : NINA.ShellyPower · **Version** : 1.2.0 · **Auteur** : Gérard Hurtaud
+**Projet** : NINA.ShellyPower · **Version** : 1.4.0 · **Auteur** : Gérard Hurtaud
 **Date** : 28 août 2026 · **NINA** : 3.2.0.9001 · **SDK** : .NET 8.0.424
 **GitHub** : https://github.com/GHD-arch/ShellyPower
+
+## Mises à jour — Version 1.4.0 (3 septembre 2026)
+
+- **Instruction « Shelly Power Wait »** : attend qu'une prise soit ON ou OFF (délai
+  configurable, vérification toutes les 2 s). Éditeur dans le séquenceur via le pattern
+  SequenceBlockView (Prise + état attendu + délai). Échec visible : notification d'erreur
+  NINA + Logger.Error au délai dépassé.
+- **Correctif skip silencieux** : le timeout HTTP (TaskCanceledException) était re-lancé
+  par GetStatusAsync → NINA interprétait l'annulation comme un skip silencieux. Le repli
+  Gen1 est désormais tenté et l'échec retourne un résultat « Injoignable » propre.
+- Ajout de ShellyPowerWaitInstruction.cs + template éditeur dans Templates.xaml.
+
+## Mises à jour — Version 1.3.0 (28 août 2026)
+
+- **ComboBox dans le séquenceur complet** : injection des templates DataType dans les
+  Resources du parent du ContentPresenter (scope element) + re-evaluation du Content —
+  le menu de sélection de prise s'affiche dans l'arbre du séquenceur, boutons préservés.
+- **Actualisation automatique du panneau** : timer 15 s (DispatcherTimer) dans
+  ShellyPanelCore, protégé contre les chevauchements (flag _refreshing).
+- **Garde-fou « PC »** : avertissement renforcé avant d'éteindre une prise dont le nom
+  contient « pc »/« ordi »/« computer » (risque de couper la machine qui fait tourner NINA).
+- **Log des actions** : chaque ON/OFF journalisé via NINA.Core.Utility.Logger.Info
+  (panneau et toggle de l'onglet Équipement).
 
 ## Mises à jour — Version 1.2.0 (28 août 2026)
 

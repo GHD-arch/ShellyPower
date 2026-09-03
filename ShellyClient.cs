@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -164,10 +164,6 @@ namespace NINA.ShellyPower
                 result.Ok = true;
                 result.Device = device;
             }
-            catch (OperationCanceledException)
-            {
-                throw;
-            }
             catch
             {
                 // ---- Repli API Gen1 : /relay/0 + /meter/0 ----
@@ -241,10 +237,6 @@ namespace NINA.ShellyPower
             {
                 await _http.GetStringAsync($"{RelayUrl(ip)}?turn=on", ct);
             }
-            catch (OperationCanceledException)
-            {
-                throw;
-            }
             catch
             {
                 try
@@ -272,10 +264,6 @@ namespace NINA.ShellyPower
             try
             {
                 await _http.GetStringAsync($"{RelayUrl(ip)}?turn=off", ct);
-            }
-            catch (OperationCanceledException)
-            {
-                throw;
             }
             catch
             {

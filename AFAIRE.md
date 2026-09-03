@@ -1,7 +1,7 @@
 ﻿# AFAIRE — Améliorations futures et versionning
 
-**Projet** : NINA.ShellyPower · **Version actuelle** : 1.2.0 · **Auteur** : Gérard Hurtaud
-**Date** : 28 août 2026 · **GitHub** : https://github.com/GHD-arch/ShellyPower
+**Projet** : NINA.ShellyPower · **Version actuelle** : 1.4.0 · **Auteur** : Gérard Hurtaud
+**Date** : 3 septembre 2026 · **GitHub** : https://github.com/GHD-arch/ShellyPower
 
 ---
 
@@ -9,47 +9,33 @@
 
 | Version | Statut | Description |
 |---|---|---|
-| **1.0.0** | ✅ Livrée | Version stable fonctionnelle |
-| **1.1.0** | ✅ Livrée | Icône, internationalisation, noms de prises bilingues, pied de page corrigé |
-| **1.2.0** | ✅ Actuelle | Correctifs : polling non bloquant |
-| 1.3.0 | Planifié | Correctifs restants (voir ci-dessous) |
-| 1.3.0 | Planifié | Nouvelles fonctionnalités (voir ci-dessous) |
-| 2.0.0 | Futur | Breaking changes (refactoring majeur) |
+| 1.0.0 | ✅ Livrée | Version stable fonctionnelle |
+| 1.1.0 | ✅ Livrée | Icône, internationalisation, noms de prises bilingues, pied de page corrigé |
+| 1.2.0 | ✅ Livrée | Correctifs : polling non bloquant |
+| **1.3.0** | ✅ Livrée | ComboBox séquenceur (pattern SequenceBlockView), identification par nom, auto-refresh, garde-fou PC, log actions |
+| **1.4.0** | ✅ Actuelle | Instruction « Shelly Power Wait » + correctif skip silencieux |
+| 1.5.0 | Planifié | Fonctionnalités restantes (voir ci-dessous) |
+| 2.0.0 | Planifié | Publication galerie NINA (voir ci-dessous) |
 
 ### Comment versionner
-1. Modifier `AssemblyFileVersion` dans `AssemblyInfo.cs` (4 segments : `1.2.0.0`)
+1. Modifier `AssemblyFileVersion` dans `AssemblyInfo.cs` (4 segments : `1.4.0.0`)
 2. Mettre à jour la version dans `README_FR.md`, `README_EN.md` et `DIGEST.md`
 3. `dotnet build -c Release` → déployer le DLL
-4. Tag Git : `git tag v1.2.0` (si dépôt Git)
+4. Tag Git : `git tag v1.4.0` (si dépôt Git)
 
 ---
 
-## Correctifs (1.3.0)
-
-| # | Description | Priorité |
-|---|---|---|
-| 1 | **ComboBox dans le séquenceur complet** : injecter les templates DataType dans les Resources du SequenceBlockView (pas du ContentPresenter) via un `DispatcherTimer` 100 ms après `Loaded`, pour laisser les bindings se résoudre avant l'injection + forcer la réévaluation | Haute |
-| 2 | ~~**Polling non bloquant**~~ — ✅ fait en 1.2.0 (timeout 2 s, pré-chargement parallèle via ShellyClient.Prefetch, rafraîchissement du panneau en Task.WhenAll) | — |
-| 3 | **Actualisation auto du panneau** : timer 10 s dans `ShellyPanelCore` pour rafraîchir l'état des prises configurées (au lieu du bouton manuel uniquement) | Moyenne |
-| 4 | **Garde-fou « PC »** : avertissement renforcé si le nom de la prise contient « PC » (risque de couper la machine qui fait tourner NINA) | Basse |
-| 5 | **Log des actions** : journaliser ON/OFF dans le log NINA (qui a allumé/éteint quoi, quand) | Basse |
-
----
-
-## Nouvelles fonctionnalités (1.4.0)
+## Fonctionnalités (1.5.0)
 
 | # | Description | Intérêt |
 |---|---|---|
-| 1 | **Support authentification Shelly** : identifiants dans les options + en-tête Basic/Auth pour les Gen2/Gen3 avec `auth_en=true` | Sécurité |
-| 2 | **Instruction « Attendre état »** : attendre que la prise soit ON/OFF avec timeout (validable dans la séquence) | Automatisation |
+| 1 | ~~**Support authentification Shelly**~~ — ❌ supprimé (non souhaité) | — |
+| 2 | ~~**Instruction « Attendre état »**~~ — ✅ fait en 1.4.0 (ShellyPowerWaitInstruction : prise + état ON/OFF + délai, notification d'erreur visible, correctif skip silencieux) | — |
 | 3 | **Condition de séquence** : « Si prise allumée alors… » (`ISequenceCondition`) | Automatisation |
 | 4 | **Instruction Toggle** + **durée** (« allumer 10 min puis éteindre ») | Confort |
 | 5 | **Déclencheur** : couper automatiquement à la fin du safe-to-observe (`ISequenceTrigger`) | Automatisation |
 | 6 | **Export/import config** : partage entre profils ou machines | Confort |
 | 7 | **Prises individuelles** dans le sélecteur d'équipement (au lieu d'un hub unique) | Scalabilité |
-
-> ✅ **Fait en 1.1.0** : icône SVG propre (⏻), traduction anglaise des libellés (bilingue,
-> anglais par défaut), noms de prises bilingues avec migration.
 
 ---
 
@@ -57,40 +43,47 @@
 
 | Étape | Description |
 |---|---|
-| 1 | Créer un release GitHub (zip du DLL + manifeste) |
+| 1 | Créer un dépôt GitHub `GHD-arch/ShellyPower` avec le code + release (zip du DLL) |
 | 2 | Soumettre le manifeste à [nina.plugin.manifests](https://github.com/isbeorn/nina.plugin.manifests) |
 | 3 | Installation en 1 clic depuis NINA (PluginInstaller) |
 | 4 | CI/CD : GitHub Actions pour build auto + release à chaque tag |
 
 ---
 
-## Notes techniques pour les correctifs
+## Corrections mineures en attente
 
-### ComboBox dans le séquenceur complet (correctif #1)
-Le `ContentPresenter` « SequenceItemContent » du `SequenceBlockView` de NINA résout
-l'éditeur par lookup implicite `DataType`. Un template `DataType` dans
-`Application.Resources` est aussi trouvé par l'`ItemsControl` parent (remplaçant toute
-la ligne + boutons). Solution : injecter le template dans les `Resources` du
-`SequenceBlockView` lui-même (scope élément) via un `DispatcherTimer` après `Loaded` :
-
-```csharp
-// Pseudo-code
-DispatcherTimer t = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
-t.Tick += (s, e) => {
-    var blockView = FindAncestor<SequenceBlockView>(cp);
-    if (blockView != null && !blockView.Resources.Contains(typeof(OnInstruction))) {
-        blockView.Resources[typeof(OnInstruction)] = BuildEditorTemplate("ON", "#FF66BB6A");
-        cp.Content = null; cp.Content = content; // forcer réévaluation
-    }
-    t.Stop();
-};
-t.Start();
-```
-
-### Polling parallèle (correctif #2)
-Remplacer la boucle séquentielle `for i in 0..3: await client.GetStatusAsync(ip)` par
-`Task.WhenAll(plugs.Select(p => client.GetStatusAsync(p.Ip)))` dans le polling du hub.
+| # | Description | Priorité |
+|---|---|---|
+| 1 | **Garde-fou « PC »** dans les instructions de séquenceur (actuellement seulement panneau + Équipement) | Basse |
+| 2 | **Icône du plugin dans la sidebar** du séquenceur (l'ExportMetadata "Icon" = "ButtonSVG" générique) | Basse |
+| 3 | **Mise à jour automatique du nom** des instructions quand une prise est renommée dans le panneau (actuellement au rechargement de la séquence) | Basse |
 
 ---
 
-*Auteur : Gérard Hurtaud · Dernière mise à jour : 28 août 2026*
+## Notes — problème ComboBox du séquenceur : RÉSOLU (1.3.0)
+
+Trouvé dans la source NINA clonée (`NINA.Sequencer\SequenceItem\Switch\Datatemplates.xaml`) :
+le pattern officiel consiste à envelopper l'éditeur dans un **nouveau `SequenceBlockView`**
+dont la propriété `SequenceItemContent` (DependencyProperty du code-behind) reçoit les
+contrôles. Ce blockview interne fournit la ligne complète avec TOUS les boutons d'action
+de NINA autour de l'éditeur personnalisé :
+
+```xml
+<DataTemplate DataType="{x:Type sp:ShellyPowerOnInstruction}">
+    <view:SequenceBlockView>
+        <view:SequenceBlockView.SequenceItemContent>
+            <StackPanel Orientation="Horizontal">
+                <!-- contrôles de l'éditeur (ON/OFF + ComboBox) -->
+            </StackPanel>
+        </view:SequenceBlockView.SequenceItemContent>
+    </view:SequenceBlockView>
+</DataTemplate>
+```
+
+Les approches antérieures (DataType dans Application.Resources, injection dans le
+ContentPresenter ou son parent, thème Generic.xaml) remplaçaient la ligne entière ou
+arrivaient trop tard — ce pattern les rend obsolètes.
+
+---
+
+*Auteur : Gérard Hurtaud · Dernière mise à jour : 3 septembre 2026*

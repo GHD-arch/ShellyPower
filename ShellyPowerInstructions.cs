@@ -1,4 +1,4 @@
-using NINA.Profile;
+﻿using NINA.Profile;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -29,18 +29,6 @@ namespace NINA.ShellyPower
 
         /// <summary>Libellé d'action ("Shelly Power On" / "Shelly Power Off").</summary>
         protected abstract string ActionLabel { get; }
-
-        static ShellyPowerInstructionBase()
-        {
-            // Injecte les templates d'edition dans les Resources du ContentPresenter au
-            // moment de son chargement. Scope element : le ContentPresenter trouve le
-            // template (ComboBox affichee) mais l'ItemsControl du sequencer ne le trouve
-            // PAS (la ligne complete avec ses boutons d'action est preservee).
-            System.Windows.EventManager.RegisterClassHandler(
-                typeof(System.Windows.Controls.ContentPresenter),
-                System.Windows.FrameworkElement.LoadedEvent,
-                new System.Windows.RoutedEventHandler(OnContentPresenterLoaded));
-        }
 
         [ImportingConstructor]
         protected ShellyPowerInstructionBase(IProfileService profileService)
@@ -183,82 +171,7 @@ namespace NINA.ShellyPower
             return attr != null && Guid.TryParse(attr.Value, out var g) ? g : Guid.Empty;
         }
 
-        // ----- Injection du template d'edition dans le ContentPresenter -----
-        // Le ContentPresenter "SequenceItemContent" du SequenceBlockView de NINA utilise le
-        // lookup implicite par DataType pour afficher l'editeur. Un template DataType dans
-        // Application.Resources serait aussi trouve par l'ItemsControl (remplaçant toute la
-        // ligne + boutons). En l'injectant dans les Resources du ContentPresenter individuel,
-        // il n'est visible qu'a cet element — l'editeur s'affiche, les boutons restent.
 
-        private static void OnContentPresenterLoaded(object sender, System.Windows.RoutedEventArgs e)
-        {
-            if (!(sender is System.Windows.Controls.ContentPresenter cp))
-            {
-                return;
-            }
-
-            var content = cp.Content;
-            if (content == null)
-            {
-                return;
-            }
-
-            var type = content.GetType();
-            object key = null;
-            System.Windows.DataTemplate template = null;
-
-            if (type == typeof(ShellyPowerOnInstruction) && !cp.Resources.Contains(typeof(ShellyPowerOnInstruction)))
-            {
-                key = typeof(ShellyPowerOnInstruction);
-                template = BuildEditorTemplate("ON", "#FF66BB6A");
-            }
-            else if (type == typeof(ShellyPowerOffInstruction) && !cp.Resources.Contains(typeof(ShellyPowerOffInstruction)))
-            {
-                key = typeof(ShellyPowerOffInstruction);
-                template = BuildEditorTemplate("OFF", "#FFEF5350");
-            }
-
-            if (key != null && template != null)
-            {
-                cp.Resources[key] = template;
-                // Force le ContentPresenter a réévaluer son template : sans ça, le template
-                // est injecté trop tard (après la première résolution) et la ComboBox
-                // n'apparaît pas.
-                cp.Content = null;
-                cp.Content = content;
-            }
-        }
-
-        private static System.Windows.DataTemplate BuildEditorTemplate(string label, string color)
-        {
-            var template = new System.Windows.DataTemplate();
-            template.DataType = label == "ON" ? typeof(ShellyPowerOnInstruction) : typeof(ShellyPowerOffInstruction);
-
-            var panel = new System.Windows.FrameworkElementFactory(typeof(System.Windows.Controls.StackPanel));
-            panel.SetValue(System.Windows.Controls.StackPanel.OrientationProperty, System.Windows.Controls.Orientation.Horizontal);
-            panel.SetValue(System.Windows.FrameworkElement.HorizontalAlignmentProperty, System.Windows.HorizontalAlignment.Left);
-
-            var lbl = new System.Windows.FrameworkElementFactory(typeof(System.Windows.Controls.TextBlock));
-            lbl.SetValue(System.Windows.Controls.TextBlock.TextProperty, label);
-            lbl.SetValue(System.Windows.Controls.TextBlock.FontWeightProperty, System.Windows.FontWeights.Bold);
-            lbl.SetValue(System.Windows.Controls.TextBlock.ForegroundProperty, new System.Windows.Media.SolidColorBrush(
-                (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(color)));
-            lbl.SetValue(System.Windows.Controls.TextBlock.VerticalAlignmentProperty, System.Windows.VerticalAlignment.Center);
-            lbl.SetValue(System.Windows.Controls.TextBlock.MarginProperty, new System.Windows.Thickness(0, 0, 6, 0));
-            panel.AppendChild(lbl);
-
-            var combo = new System.Windows.FrameworkElementFactory(typeof(System.Windows.Controls.ComboBox));
-            combo.SetValue(System.Windows.Controls.ComboBox.MinWidthProperty, 120.0);
-            combo.SetValue(System.Windows.Controls.ComboBox.VerticalAlignmentProperty, System.Windows.VerticalAlignment.Center);
-            combo.SetValue(System.Windows.FrameworkElement.ToolTipProperty, ShellyStrings.L("Prise à piloter", "Plug to control"));
-            combo.SetBinding(System.Windows.Controls.ComboBox.ItemsSourceProperty, new System.Windows.Data.Binding("PlugNames"));
-            combo.SetBinding(System.Windows.Controls.ComboBox.SelectedIndexProperty,
-                new System.Windows.Data.Binding("SelectedPlugIndex") { Mode = System.Windows.Data.BindingMode.TwoWay });
-            panel.AppendChild(combo);
-
-            template.VisualTree = panel;
-            return template;
-        }
     }
 
     /// <summary>Instruction de séquenceur : allumer une prise Shelly.</summary>

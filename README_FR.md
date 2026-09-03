@@ -1,6 +1,6 @@
 ﻿# NINA.ShellyPower — Plugin NINA 3.x pour prises connectées Shelly
 
-**Version 1.2.0** · Auteur : **Gérard Hurtaud** · Licence : MIT
+**Version 1.4.0** · Auteur : **Gérard Hurtaud** · Licence : MIT
 · **GitHub** : https://github.com/GHD-arch/ShellyPower
 · NINA 3.0+ (testé 3.2.0.9001)
 
@@ -26,6 +26,7 @@ chacune avec son adresse IP.
 6. **Protection anti-coupure** — confirmation demandée avant toute extinction manuelle
    (toggle Équipement, bouton OFF du panneau). Le séquenceur n'est **pas** concerné
    (automatisation nocturne préservée).
+7. **Attendre état** — instruction Shelly Power Wait qui attend qu'une prise soit ON ou OFF (délai configurable), échoue avec notification visible au délai dépassé — vérifie que le matériel est réellement prêt avant de poursuivre.
 7. **Interface bilingue** — anglais par défaut (en-US/en-GB), français si la culture UI
    de NINA est `fr` (tous les libellés, messages, confirmations et états).
 8. **Icône propre** — symbole « power » (⏻) en géométrie vectorielle dans le séquenceur,
@@ -96,4 +97,4 @@ MIT.
 
 ---
 
-*Auteur : Gérard Hurtaud · GitHub : [GHD-arch/ShellyPower](https://github.com/GHD-arch/ShellyPower) · Version 1.2.0 · 28 août 2026*
+*Auteur : Gérard Hurtaud · GitHub : [GHD-arch/ShellyPower](https://github.com/GHD-arch/ShellyPower) · Version 1.3.0 · 28 août 2026*

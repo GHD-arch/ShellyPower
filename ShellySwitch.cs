@@ -129,6 +129,7 @@ namespace NINA.ShellyPower
                 Value = TargetValue > 0
                     ? (_client.TurnOnAsync(_ip).GetAwaiter().GetResult() ? 1 : 0)
                     : (_client.TurnOffAsync(_ip).GetAwaiter().GetResult() ? 1 : 0);
+                NINA.Core.Utility.Logger.Info($"Shelly Power: {(TargetValue > 0 ? "ON" : "OFF")} '{Name}' ({_ip}) → {(Value > 0 ? "ON" : "OFF")}");
             }
             catch
             {
@@ -161,9 +162,15 @@ namespace NINA.ShellyPower
             try
             {
                 var owner = Application.Current?.MainWindow;
+                var isPc = IsPcPlug(Name);
+                var message = isPc
+                    ? ShellyStrings.L(
+                        $"⚠ Attention : cette prise semble alimenter un ordinateur (« {Name} »). L'éteindre peut couper la machine qui fait tourner NINA. Continuer ?",
+                        $"⚠ Warning: this plug may power a computer (« {Name} »). Turning it off may cut the machine running NINA. Continue?")
+                    : ShellyStrings.L($"Éteindre la prise « {Name} » ({_ip}) ?", $"Turn off plug « {Name} » ({_ip}) ?");
                 var answer = MessageBox.Show(
                     owner,
-                    ShellyStrings.L($"Éteindre la prise « {Name} » ({_ip}) ?", $"Turn off plug « {Name} » ({_ip}) ?"),
+                    message,
                     ShellyStrings.L("Shelly Power — Confirmation", "Shelly Power — Confirmation"),
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Warning,
@@ -175,6 +182,15 @@ namespace NINA.ShellyPower
                 // Sécurité maximale : si la boîte ne peut pas s'afficher, on n'éteint pas.
                 return false;
             }
+        }
+
+        /// <summary>Détection approximative d'une prise qui alimente un ordinateur.</summary>
+        private static bool IsPcPlug(string plugName)
+        {
+            var name = plugName ?? "";
+            return name.Contains("pc", StringComparison.OrdinalIgnoreCase)
+                || name.Contains("ordi", StringComparison.OrdinalIgnoreCase)
+                || name.Contains("computer", StringComparison.OrdinalIgnoreCase);
         }
     }
 
