@@ -1,4 +1,4 @@
-<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sp="clr-namespace:NINA.ShellyPower"
                     xmlns:view="clr-namespace:NINA.View.Sequencer;assembly=NINA.Sequencer">
@@ -13,6 +13,7 @@
     <DataTemplate x:Key="NINA.ShellyPower.ShellyOptionsVM_Dockable">
         <sp:ShellyOptionsView/>
     </DataTemplate>
+
 
     <!-- Page Plugins des Options de NINA (PluginOptionsDataTemplateSelector : manifest.Name + suffixe) -->
     <DataTemplate x:Key="Shelly Power_Options">
@@ -62,7 +63,7 @@
         </view:SequenceBlockView>
     </DataTemplate>
 
-    <!-- Editeur de l'instruction "Attendre état" : prise + état attendu + delai max -->
+    <!-- Editeur de l'instruction "Attendre etat" : prise + etat attendu + delai max -->
     <DataTemplate DataType="{x:Type sp:ShellyPowerWaitInstruction}">
         <view:SequenceBlockView>
             <view:SequenceBlockView.SequenceItemContent>
@@ -81,6 +82,51 @@
                     <TextBlock Text="Délai (s) :" VerticalAlignment="Center" Margin="10,0,6,0"/>
                     <TextBox Width="60" VerticalAlignment="Center"
                              Text="{Binding TimeoutSeconds, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                </StackPanel>
+            </view:SequenceBlockView.SequenceItemContent>
+        </view:SequenceBlockView>
+    </DataTemplate>
+
+    <!--
+      Editeur de l'instruction "Toggle + duree" : bascule la prise, attend la duree
+      configuree, puis revient a l'etat initial.
+    -->
+    <DataTemplate DataType="{x:Type sp:ShellyPowerToggleInstruction}">
+        <view:SequenceBlockView>
+            <view:SequenceBlockView.SequenceItemContent>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                    <TextBlock Text="Prise :" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <ComboBox Width="140" VerticalAlignment="Center"
+                              ItemsSource="{Binding PlugNames}"
+                              SelectedIndex="{Binding SelectedPlugIndex, Mode=TwoWay}"
+                              ToolTip="Prise à basculer"/>
+                    <TextBlock Text="Durée (min) :" VerticalAlignment="Center" Margin="10,0,6,0"/>
+                    <TextBox Width="50" VerticalAlignment="Center"
+                             Text="{Binding DurationMinutes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                </StackPanel>
+            </view:SequenceBlockView.SequenceItemContent>
+        </view:SequenceBlockView>
+    </DataTemplate>
+
+    <!--
+      Editeur de la condition "Shelly Power While" : le bloc s'execute TANT QUE la prise
+      est dans l'etat choisi (interrupt via ConditionWatchdog des que l'etat change).
+    -->
+    <DataTemplate DataType="{x:Type sp:ShellyPowerCondition}">
+        <view:SequenceBlockView>
+            <view:SequenceBlockView.SequenceItemContent>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                    <TextBlock Text="Prise :" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <ComboBox Width="140" VerticalAlignment="Center"
+                              ItemsSource="{Binding PlugNames}"
+                              SelectedIndex="{Binding SelectedPlugIndex, Mode=TwoWay}"
+                              ToolTip="Prise à surveiller"/>
+                    <ComboBox Width="90" VerticalAlignment="Center" Margin="8,0,0,0"
+                              SelectedIndex="{Binding ExpectedOnIndex, Mode=TwoWay}"
+                              ToolTip="Le bloc s'exécute tant que la prise est dans cet état">
+                        <ComboBoxItem Content="OFF"/>
+                        <ComboBoxItem Content="ON"/>
+                    </ComboBox>
                 </StackPanel>
             </view:SequenceBlockView.SequenceItemContent>
         </view:SequenceBlockView>
@@ -107,6 +153,26 @@
                       SelectedIndex="{Binding SelectedPlugIndex, Mode=TwoWay}"
                       ToolTip="Prise à piloter (les prises configurées avec une IP apparaissent ici)"/>
         </StackPanel>
+    </DataTemplate>
+
+    <!--
+      Editeur du declencheur "Shelly Power Unsafe" : selection de la prise a couper
+      automatiquement quand le safety monitor passe en UNSAFE. Pattern ReconnectTrigger
+      (SequenceBlockView + SequenceItemContent). Les instructions imbriquees dans le
+      declencheur s'executent apres la coupure (TriggerRunner standard de NINA).
+    -->
+    <DataTemplate DataType="{x:Type sp:ShellyPowerUnsafeTrigger}">
+        <view:SequenceBlockView>
+            <view:SequenceBlockView.SequenceItemContent>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                    <TextBlock Text="⚠ Unsafe → Prise :" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <ComboBox Width="140" VerticalAlignment="Center"
+                              ItemsSource="{Binding PlugNames}"
+                              SelectedIndex="{Binding SelectedPlugIndex, Mode=TwoWay}"
+                              ToolTip="Prise à couper automatiquement quand le safety monitor devient UNSAFE"/>
+                </StackPanel>
+            </view:SequenceBlockView.SequenceItemContent>
+        </view:SequenceBlockView>
     </DataTemplate>
 
 </ResourceDictionary>

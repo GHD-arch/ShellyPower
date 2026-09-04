@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel.Composition;
 using System.Windows;
 using System.Windows.Input;
@@ -89,13 +89,11 @@ namespace NINA.ShellyPower
         {
             _core = new ShellyPanelCore(profileService);
             Title = "Shelly Power";
+            // Icône « power » (⏻) partagée — même symbole que les instructions du séquenceur.
             // Géométrie figée (Freeze) : le VM est créé par MEF sur un thread d'arrière-plan ;
             // un Freezable non figé provoquerait « Must create DependencySource on same
             // Thread » au rendu WPF.
-            var image = new GeometryGroup();
-            image.Children.Add(new RectangleGeometry(new Rect(0, 0, 16, 16)));
-            image.Freeze();
-            ImageGeometry = image;
+            ImageGeometry = ShellyIcons.BuildPowerIcon();
         }
 
         /// <summary>Logique partagée (DataContext effectif de la vue).</summary>

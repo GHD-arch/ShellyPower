@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
@@ -27,7 +27,7 @@ namespace NINA.ShellyPower
     [Export(typeof(ISequenceItem))]
     [ExportMetadata("Name", "Shelly Power Wait")]
     [ExportMetadata("Description", "Attendre que la prise soit ON ou OFF (avec délai max).")]
-    [ExportMetadata("Icon", "HourglassSVG")]
+
     [ExportMetadata("Category", "Shelly Power")]
     [JsonObject(MemberSerialization.OptIn)]
     public class ShellyPowerWaitInstruction : ShellyPowerInstructionBase

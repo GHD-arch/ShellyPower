@@ -19,7 +19,7 @@
 
 ### Comment versionner
 1. Modifier `AssemblyFileVersion` dans `AssemblyInfo.cs` (4 segments : `1.4.0.0`)
-2. Mettre à jour la version dans `README_FR.md`, `README_EN.md` et `DIGEST.md`
+2. Mettre à jour la version dans `README_FR.md`, `README.md` et `DIGEST.md`
 3. `dotnet build -c Release` → déployer le DLL
 4. Tag Git : `git tag v1.4.0` (si dépôt Git)
 

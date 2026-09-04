@@ -34,7 +34,7 @@ namespace NINA.ShellyPower
         protected ShellyPowerInstructionBase(IProfileService profileService)
         {
             _profileService = profileService;
-            Icon = BuildIcon();
+            Icon = ShellyIcons.BuildPowerIcon();
             SelectedPlugIndex = 0;
         }
 
@@ -114,51 +114,6 @@ namespace NINA.ShellyPower
             return true;
         }
 
-        private static System.Windows.Media.GeometryGroup BuildIcon()
-        {
-            // Icône « bouton power » (⏻) : cercle ouvert 270° + tige verticale.
-            // Construite en géométrie vectorielle pure, figée (Freeze) car la classe est
-            // instanciée par MEF sur un thread d'arrière-plan.
-            //
-            // Cercle : centre (8,8), rayon extérieur 6.5, rayon intérieur 4.5, gap 90° en haut.
-            // Tige : rectangle 1.5px de large, du sommet du cercle vers le centre.
-
-            var cos45 = 0.7071;
-            var ro = 6.5; // rayon extérieur
-            var ri = 4.5; // rayon intérieur
-
-            // Anneau ouvert (270°) — contournement du cercle avec gap en haut
-            var ring = new System.Windows.Media.PathGeometry();
-            var fig = new System.Windows.Media.PathFigure
-            {
-                StartPoint = new System.Windows.Point(8 - ro * cos45, 8 - ro * cos45),
-                IsClosed = true,
-            };
-            // Arc extérieur 270° (sens horaire)
-            fig.Segments.Add(new System.Windows.Media.ArcSegment(
-                new System.Windows.Point(8 + ro * cos45, 8 - ro * cos45),
-                new System.Windows.Size(ro, ro), 0, true,
-                System.Windows.Media.SweepDirection.Clockwise, true));
-            // Ligne vers l'arc intérieur
-            fig.Segments.Add(new System.Windows.Media.LineSegment(
-                new System.Windows.Point(8 + ri * cos45, 8 - ri * cos45), true));
-            // Arc intérieur 270° (sens anti-horaire)
-            fig.Segments.Add(new System.Windows.Media.ArcSegment(
-                new System.Windows.Point(8 - ri * cos45, 8 - ri * cos45),
-                new System.Windows.Size(ri, ri), 0, true,
-                System.Windows.Media.SweepDirection.Counterclockwise, true));
-            ring.Figures.Add(fig);
-
-            // Tige verticale (du sommet vers le centre)
-            var stem = new System.Windows.Media.RectangleGeometry(
-                new System.Windows.Rect(7.25, 1, 1.5, 6));
-
-            var group = new System.Windows.Media.GeometryGroup();
-            group.Children.Add(ring);
-            group.Children.Add(stem);
-            group.Freeze();
-            return group;
-        }
 
         private static readonly Guid PluginGuid = GetPluginGuid();
 
@@ -178,7 +133,7 @@ namespace NINA.ShellyPower
     [Export(typeof(ISequenceItem))]
     [ExportMetadata("Name", "Shelly Power On")]
     [ExportMetadata("Description", "Turns on a configured Shelly plug.")]
-    [ExportMetadata("Icon", "ButtonSVG")]
+
     [ExportMetadata("Category", "Shelly Power")]
     [JsonObject(MemberSerialization.OptIn)]
     public class ShellyPowerOnInstruction : ShellyPowerInstructionBase
@@ -225,7 +180,7 @@ namespace NINA.ShellyPower
     [Export(typeof(ISequenceItem))]
     [ExportMetadata("Name", "Shelly Power Off")]
     [ExportMetadata("Description", "Turns off a configured Shelly plug.")]
-    [ExportMetadata("Icon", "ButtonSVG")]
+
     [ExportMetadata("Category", "Shelly Power")]
     [JsonObject(MemberSerialization.OptIn)]
     public class ShellyPowerOffInstruction : ShellyPowerInstructionBase

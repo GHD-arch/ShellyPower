@@ -1,0 +1,18 @@
+# Build artifacts
+bin/
+obj/
+
+# Local build environment (redirected DOTNET_CLI_HOME / NUGET_PACKAGES / APPDATA / LOCALAPPDATA)
+.dotnet-home/
+.nuget/
+AppData/
+LocalAppData/
+
+# IDE
+.vs/
+*.user
+*.suo
+
+# OS
+Thumbs.db
+Desktop.ini
