@@ -1,4 +1,4 @@
-# Build artifacts
+﻿# Build artifacts
 bin/
 obj/
 
@@ -16,3 +16,5 @@ LocalAppData/
 # OS
 Thumbs.db
 Desktop.ini
+# Release artifacts (local staging)
+_release/
