@@ -1,8 +1,31 @@
 ﻿# DIGEST — Historique de développement du plugin Shelly Power
 
-**Projet** : NINA.ShellyPower · **Version** : 1.4.0 · **Auteur** : Gérard Hurtaud
+**Projet** : NINA.ShellyPower · **Version** : 1.5.0 · **Auteur** : Gérard Hurtaud
 **Date** : 28 août 2026 · **NINA** : 3.2.0.9001 · **SDK** : .NET 8.0.424
 **GitHub** : https://github.com/GHD-arch/ShellyPower
+
+## Mises à jour — Version 1.5.0 (7 septembre 2026)
+
+- **Condition « Shelly Power While »** (ISequenceCondition) : le bloc s'exécute tant que la
+  prise est dans l'état choisi — ConditionWatchdog 3 s, interruption propre + notification,
+  Check synchrone entre instructions. Nom dynamique (While → Prise = ON/OFF).
+- **Instruction « Shelly Power Toggle »** : bascule, attente de la durée (progression,
+  annulable), restauration de l'état initial.
+- **Déclencheur « Shelly Power Unsafe »** (ISequenceTrigger) : coupe la prise sélectionnée
+  quand le safety monitor passe UNSAFE ; instructions imbriquées exécutées après
+  (TriggerRunner) ; notifications limitées à 1/minute.
+- **Icône ⏻ partout** : ShellyIcons.BuildPowerIcon() construite en code (metadata Icon
+  retirée — PluginLoader écrasait via un indexeur sans traversée des MergedDictionaries) ;
+  icône du dockable fixée (c'était un RectangleGeometry plein = carré blanc dans la barre
+  Tools d'Imaging).
+- **Templates _Mini pour les 6 entités** : sans clé _Mini, le mini-séquenceur retombait sur
+  la SequenceBlockView complète (carte à 75 % de largeur). Patterns MiniCondition /
+  MiniSequenceItem (source NINA clonée).
+- **Correctif d'affichage du panneau** : message de résultat sur une ligne (ellipsis +
+  ToolTip) — le wrap multi-lignes étirait la ligne de prise verticalement dans le dock
+  Acquisition.
+- **Publication** : README_EN.md renommé README.md, GUIDE.md bilingue créé, LICENSE MIT,
+  .gitignore, nettoyage du dépôt (143 artefacts dés-trackés), build.ps1/build.rsp retirés.
 
 ## Mises à jour — Version 1.4.0 (3 septembre 2026)
 

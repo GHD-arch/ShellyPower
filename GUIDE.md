@@ -1,6 +1,6 @@
 ﻿# NINA.ShellyPower — Manuel d'utilisation / User Guide
 
-**Version 1.4.0** · Auteur / Author: **Gérard Hurtaud** · Licence / License: MIT
+**Version 1.5.0** · Auteur / Author: **Gérard Hurtaud** · Licence / License: MIT
 · **GitHub** : https://github.com/GHD-arch/ShellyPower
 · NINA 3.0+ (testé / tested 3.2.0.9001)
 
@@ -195,4 +195,4 @@ The interface is **English by default**; it switches to **French** when NINA's U
 
 ---
 
-*Auteur / Author: Gérard Hurtaud · GitHub: [GHD-arch/ShellyPower](https://github.com/GHD-arch/ShellyPower) · Version 1.4.0 · 4 septembre 2026*
+*Auteur / Author: Gérard Hurtaud · GitHub: [GHD-arch/ShellyPower](https://github.com/GHD-arch/ShellyPower) · Version 1.5.0 · 7 septembre 2026*

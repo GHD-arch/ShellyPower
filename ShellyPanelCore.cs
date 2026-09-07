@@ -43,6 +43,8 @@ namespace NINA.ShellyPower
             OffCommand = new RelayCommandAsync(async i => await PowerAsync(i, false));
             RefreshCommand = new RelayCommandAsync(_ => RefreshStatesAsync());
             DetectCommand = new RelayCommand(_ => ShowDetectionWindow());
+            ExportCommand = new RelayCommand(_ => ExportConfig());
+            ImportCommand = new RelayCommand(_ => ImportConfig());
 
             // Actualisation automatique de l'état des prises (15 s), dans le thread UI.
             _autoRefresh = new System.Windows.Threading.DispatcherTimer
@@ -63,6 +65,107 @@ namespace NINA.ShellyPower
             await RefreshStatesAsync();
         }
 
+        // ----- Export / Import de la configuration (JSON) -----
+
+        /// <summary>Exporte noms, IP et protections des 4 prises vers un fichier JSON.</summary>
+        private void ExportConfig()
+        {
+            try
+            {
+                var dlg = new Microsoft.Win32.SaveFileDialog
+                {
+                    Filter = ShellyStrings.L("Configuration Shelly Power (*.json)|*.json", "Shelly Power configuration (*.json)|*.json"),
+                    FileName = "ShellyPower.json",
+                    Title = ShellyStrings.L("Exporter la configuration", "Export configuration")
+                };
+                if (dlg.ShowDialog() != true)
+                {
+                    return;
+                }
+
+                var plugs = new Newtonsoft.Json.Linq.JArray();
+                for (var i = 0; i < ShellyOptions.PlugCount; i++)
+                {
+                    plugs.Add(new Newtonsoft.Json.Linq.JObject
+                    {
+                        ["name"] = _names[i] ?? "",
+                        ["ip"] = _ips[i] ?? "",
+                        ["protectOff"] = _protectOff[i]
+                    });
+                }
+
+                var doc = new Newtonsoft.Json.Linq.JObject
+                {
+                    ["plugin"] = "NINA.ShellyPower",
+                    ["configVersion"] = 1,
+                    ["exportedAt"] = DateTime.UtcNow.ToString("o"),
+                    ["plugs"] = plugs
+                };
+                System.IO.File.WriteAllText(dlg.FileName, doc.ToString(Newtonsoft.Json.Formatting.Indented));
+
+                StatusMessage = ShellyStrings.L("✔ Configuration exportée : ", "✔ Configuration exported: ") + dlg.FileName;
+                NINA.Core.Utility.Logger.Info("Shelly Power: configuration exported to " + dlg.FileName);
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = "✖ " + ex.Message;
+                NINA.Core.Utility.Logger.Error("Shelly Power: export failed — " + ex.Message);
+                NINA.Core.Utility.Notification.Notification.ShowError(ShellyStrings.L(
+                    "Échec de l'export de la configuration : ", "Failed to export configuration: ") + ex.Message);
+            }
+        }
+
+        /// <summary>Importe un fichier JSON de configuration (noms, IP, protections) et l'applique.</summary>
+        private void ImportConfig()
+        {
+            try
+            {
+                var dlg = new Microsoft.Win32.OpenFileDialog
+                {
+                    Filter = ShellyStrings.L("Configuration Shelly Power (*.json)|*.json", "Shelly Power configuration (*.json)|*.json"),
+                    Title = ShellyStrings.L("Importer la configuration", "Import configuration")
+                };
+                if (dlg.ShowDialog() != true)
+                {
+                    return;
+                }
+
+                var doc = Newtonsoft.Json.Linq.JObject.Parse(System.IO.File.ReadAllText(dlg.FileName));
+                if (!(doc["plugs"] is Newtonsoft.Json.Linq.JArray plugs))
+                {
+                    throw new InvalidOperationException(ShellyStrings.L(
+                        "Fichier invalide : section « plugs » manquante.",
+                        "Invalid file: missing « plugs » section."));
+                }
+
+                for (var i = 0; i < ShellyOptions.PlugCount && i < plugs.Count; i++)
+                {
+                    var entry = (Newtonsoft.Json.Linq.JObject)plugs[i];
+                    var name = (string)entry["name"] ?? "";
+                    var ip = (string)entry["ip"] ?? "";
+                    var protect = (bool?)entry["protectOff"] ?? true;
+
+                    // Via les propriétés publiques : persistance + notifications INPC.
+                    if (name != _names[i]) { SetPlug(i, name, true); OnPropertyChanged($"Plug{i}Name"); }
+                    if (ip != _ips[i]) { SetPlug(i, ip, false); OnPropertyChanged($"Plug{i}Ip"); }
+                    if (protect != _protectOff[i]) { SetProtect(i, protect); OnPropertyChanged($"Plug{i}ProtectOff"); }
+                }
+
+                StatusMessage = ShellyStrings.L("✔ Configuration importée depuis ", "✔ Configuration imported from ") + dlg.FileName;
+                NINA.Core.Utility.Logger.Info("Shelly Power: configuration imported from " + dlg.FileName);
+
+                // Recharge les états pour refléter les nouvelles IP.
+                _ = RefreshStatesAsync();
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = "✖ " + ex.Message;
+                NINA.Core.Utility.Logger.Error("Shelly Power: import failed — " + ex.Message);
+                NINA.Core.Utility.Notification.Notification.ShowError(ShellyStrings.L(
+                    "Échec de l'import de la configuration : ", "Failed to import configuration: ") + ex.Message);
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public ICommand TestCommand { get; }
@@ -71,6 +174,8 @@ namespace NINA.ShellyPower
         public ICommand OffCommand { get; }
         public ICommand RefreshCommand { get; }
         public ICommand DetectCommand { get; }
+        public ICommand ExportCommand { get; }
+        public ICommand ImportCommand { get; }
 
         // ----- Propriétés par prise (sauvegarde automatique à la saisie) -----
         public string Plug0Name { get => _names[0]; set { if (SetPlug(0, value, true)) OnPropertyChanged(nameof(Plug0Name)); } }

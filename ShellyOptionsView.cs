@@ -87,6 +87,18 @@ namespace NINA.ShellyPower
             detect.SetBinding(Button.CommandProperty, new Binding("Core.DetectCommand"));
             footer.Children.Add(detect);
 
+            var export = new Button { Content = L("Exporter", "Export"), Padding = new Thickness(10, 4, 12, 4), Margin = new Thickness(8, 0, 0, 0) };
+            export.SetBinding(Button.CommandProperty, new Binding("Core.ExportCommand"));
+            export.ToolTip = L("Sauvegarder la configuration (noms, IP, protections) dans un fichier JSON",
+                               "Save the configuration (names, IPs, protections) to a JSON file");
+            footer.Children.Add(export);
+
+            var import = new Button { Content = L("Importer", "Import"), Padding = new Thickness(10, 4, 12, 4), Margin = new Thickness(8, 0, 0, 0) };
+            import.SetBinding(Button.CommandProperty, new Binding("Core.ImportCommand"));
+            import.ToolTip = L("Charger une configuration depuis un fichier JSON",
+                               "Load a configuration from a JSON file");
+            footer.Children.Add(import);
+
             var status = new TextBlock { VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(8, 0, 0, 0) };
             status.SetBinding(TextBlock.TextProperty, new Binding("Core.StatusMessage"));
             footer.Children.Add(status);
@@ -150,8 +162,18 @@ namespace NINA.ShellyPower
             protect.SetBinding(CheckBox.IsCheckedProperty, new Binding($"Core.Plug{index}ProtectOff") { Mode = BindingMode.TwoWay });
             Grid.SetRow(protect, row); Grid.SetColumn(protect, 7); grid.Children.Add(protect);
 
-            var result = new TextBlock { VerticalAlignment = VerticalAlignment.Center, TextWrapping = TextWrapping.Wrap };
+            // Message de résultat sur UNE ligne (ellipsis) : avec TextWrapping.Wrap dans une
+            // colonne étroite, un message long repliait sur 5-10 lignes et la ligne de la
+            // prise s'étendait verticalement (bug d'affichage constaté dans le dock
+            // Acquisition). Le texte complet reste accessible via le ToolTip.
+            var result = new TextBlock
+            {
+                VerticalAlignment = VerticalAlignment.Center,
+                TextWrapping = TextWrapping.NoWrap,
+                TextTrimming = TextTrimming.CharacterEllipsis
+            };
             result.SetBinding(TextBlock.TextProperty, new Binding($"Core.Plug{index}Result"));
+            result.SetBinding(TextBlock.ToolTipProperty, new Binding($"Core.Plug{index}Result"));
             result.SetBinding(TextBlock.ForegroundProperty, new Binding($"Core.Plug{index}Result") { Converter = new ResultToBrushConverter() });
             Grid.SetRow(result, row); Grid.SetColumn(result, 8); grid.Children.Add(result);
         }

@@ -1,7 +1,8 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sp="clr-namespace:NINA.ShellyPower"
-                    xmlns:view="clr-namespace:NINA.View.Sequencer;assembly=NINA.Sequencer">
+                    xmlns:view="clr-namespace:NINA.View.Sequencer;assembly=NINA.Sequencer"
+                    xmlns:mini="clr-namespace:NINA.View.Sequencer.MiniSequencer;assembly=NINA.Sequencer">
 
     <!--
       Templates du plugin Shelly Power, compiles en BAML (contenu diffe).
@@ -173,6 +174,74 @@
                 </StackPanel>
             </view:SequenceBlockView.SequenceItemContent>
         </view:SequenceBlockView>
+    </DataTemplate>
+
+    <!--
+      Variantes "_Mini" pour le MINI-SEQUENCEUR (dock Acquisition/Tools) — INDISPENSABLES
+      pour chaque entite : sans cle "_Mini", le MiniSequencerDataTemplateSelector retourne
+      null et le fallback implicite (DataType) rend la SequenceBlockView COMPLETE —
+      une carte qui prend 75% de la largeur du dock. Cles : FullName + "_Mini".
+    -->
+    <DataTemplate x:Key="NINA.ShellyPower.ShellyPowerWaitInstruction_Mini">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+            <TextBlock Text="WAIT" FontWeight="Bold" Foreground="#FFFFB74D"
+                       VerticalAlignment="Center" Margin="0,0,6,0"/>
+            <ComboBox MinWidth="110" VerticalAlignment="Center"
+                      ItemsSource="{Binding PlugNames}"
+                      SelectedIndex="{Binding SelectedPlugIndex, Mode=TwoWay}"/>
+            <ComboBox Width="70" VerticalAlignment="Center" Margin="6,0,0,0"
+                      SelectedIndex="{Binding ExpectedOnIndex, Mode=TwoWay}">
+                <ComboBoxItem Content="OFF"/>
+                <ComboBoxItem Content="ON"/>
+            </ComboBox>
+            <TextBox Width="45" VerticalAlignment="Center" Margin="6,0,0,0"
+                     Text="{Binding TimeoutSeconds, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="NINA.ShellyPower.ShellyPowerToggleInstruction_Mini">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+            <TextBlock Text="TGL" FontWeight="Bold" Foreground="#FF4FC3F7"
+                       VerticalAlignment="Center" Margin="0,0,6,0"/>
+            <ComboBox MinWidth="110" VerticalAlignment="Center"
+                      ItemsSource="{Binding PlugNames}"
+                      SelectedIndex="{Binding SelectedPlugIndex, Mode=TwoWay}"/>
+            <TextBlock Text="min" VerticalAlignment="Center" Margin="6,0,2,0"/>
+            <TextBox Width="40" VerticalAlignment="Center"
+                     Text="{Binding DurationMinutes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="NINA.ShellyPower.ShellyPowerCondition_Mini">
+        <mini:MiniCondition>
+            <mini:MiniCondition.ConditionProgressContent>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                    <TextBlock Text="WHILE" FontWeight="Bold" Foreground="#FFBA68C8"
+                               VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <ComboBox MinWidth="110" VerticalAlignment="Center"
+                              ItemsSource="{Binding PlugNames}"
+                              SelectedIndex="{Binding SelectedPlugIndex, Mode=TwoWay}"/>
+                    <ComboBox Width="80" VerticalAlignment="Center" Margin="6,0,0,0"
+                              SelectedIndex="{Binding ExpectedOnIndex, Mode=TwoWay}">
+                        <ComboBoxItem Content="OFF"/>
+                        <ComboBoxItem Content="ON"/>
+                    </ComboBox>
+                </StackPanel>
+            </mini:MiniCondition.ConditionProgressContent>
+        </mini:MiniCondition>
+    </DataTemplate>
+
+    <DataTemplate x:Key="NINA.ShellyPower.ShellyPowerUnsafeTrigger_Mini">
+        <mini:MiniSequenceItem>
+            <mini:MiniSequenceItem.SequenceItemContent>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                    <TextBlock Text="⚠" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                    <ComboBox MinWidth="110" VerticalAlignment="Center"
+                              ItemsSource="{Binding PlugNames}"
+                              SelectedIndex="{Binding SelectedPlugIndex, Mode=TwoWay}"/>
+                </StackPanel>
+            </mini:MiniSequenceItem.SequenceItemContent>
+        </mini:MiniSequenceItem>
     </DataTemplate>
 
 </ResourceDictionary>

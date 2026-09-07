@@ -1,6 +1,6 @@
 ﻿# NINA.ShellyPower — NINA 3.x plugin for Shelly smart plugs
 
-**Version 1.4.0** · Author: **Gérard Hurtaud** · License: MIT
+**Version 1.5.0** · Author: **Gérard Hurtaud** · License: MIT
 · **GitHub**: https://github.com/GHD-arch/ShellyPower
 · NINA 3.0+ (tested 3.2.0.9001)
 
@@ -24,6 +24,11 @@ Plugin for **NINA** (Nighttime Imaging 'N' Astronomy) to control **Shelly smart 
 6. **Accidental power-off protection** — confirmation is requested before any manual
    power-off (Equipment toggle, panel OFF button). The sequencer is **not** affected
    (night-time automation preserved).
+7. **Sequencer automation kit** — six entities: On, Off, **Wait** (wait for state with
+   timeout), **Toggle** (timed toggle then restore), **While** (run-while condition with
+   watchdog), **Unsafe** (safety-trigger cut-off on safety monitor unsafe).
+8. **Custom power icon** — the plugin's vector power symbol appears everywhere: sequencer
+   sidebar, instruction editors, tree and the dockable panel button in the Imaging Tools bar.
 7. **Wait for state** — Shelly Power Wait instruction that waits until a plug reaches ON or OFF (configurable timeout), fails with a visible notification on timeout — verifies the hardware is actually ready before continuing.
 7. **Bilingual UI** — English by default (en-US/en-GB), French if NINA's UI culture is
    `fr` (all labels, messages, confirmations and states).

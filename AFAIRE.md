@@ -1,6 +1,6 @@
 ﻿# AFAIRE — Améliorations futures et versionning
 
-**Projet** : NINA.ShellyPower · **Version actuelle** : 1.4.0 · **Auteur** : Gérard Hurtaud
+**Projet** : NINA.ShellyPower · **Version actuelle** : 1.5.0 · **Auteur** : Gérard Hurtaud
 **Date** : 3 septembre 2026 · **GitHub** : https://github.com/GHD-arch/ShellyPower
 
 ---
@@ -13,8 +13,9 @@
 | 1.1.0 | ✅ Livrée | Icône, internationalisation, noms de prises bilingues, pied de page corrigé |
 | 1.2.0 | ✅ Livrée | Correctifs : polling non bloquant |
 | **1.3.0** | ✅ Livrée | ComboBox séquenceur (pattern SequenceBlockView), identification par nom, auto-refresh, garde-fou PC, log actions |
-| **1.4.0** | ✅ Actuelle | Instruction « Shelly Power Wait » + correctif skip silencieux |
-| 1.5.0 | Planifié | Fonctionnalités restantes (voir ci-dessous) |
+| **1.4.0** | ✅ Livrée | Instruction « Shelly Power Wait » + correctif skip silencieux |
+| **1.5.0** | ✅ Actuelle | Condition While, Toggle, déclencheur Unsafe, icône, correctifs affichage, GUIDE + LICENSE + .gitignore |
+| 1.6.0 | Planifié | Fonctionnalités restantes (voir ci-dessous) |
 | 2.0.0 | Planifié | Publication galerie NINA (voir ci-dessous) |
 
 ### Comment versionner
@@ -25,14 +26,14 @@
 
 ---
 
-## Fonctionnalités (1.5.0)
+## Fonctionnalités (1.6.0)
 
 | # | Description | Intérêt |
 |---|---|---|
 | 1 | ~~**Support authentification Shelly**~~ — ❌ supprimé (non souhaité) | — |
 | 2 | ~~**Instruction « Attendre état »**~~ — ✅ fait en 1.4.0 (ShellyPowerWaitInstruction : prise + état ON/OFF + délai, notification d'erreur visible, correctif skip silencieux) | — |
 | 3 | **Condition de séquence** : « Si prise allumée alors… » (`ISequenceCondition`) | Automatisation |
-| 4 | **Instruction Toggle** + **durée** (« allumer 10 min puis éteindre ») | Confort |
+| 4 | ~~**Instruction Toggle + durée**~~ — ✅ fait en 1.5.0 (bascule, attente, restauration état initial) | — |
 | 5 | **Déclencheur** : couper automatiquement à la fin du safe-to-observe (`ISequenceTrigger`) | Automatisation |
 | 6 | **Export/import config** : partage entre profils ou machines | Confort |
 | 7 | **Prises individuelles** dans le sélecteur d'équipement (au lieu d'un hub unique) | Scalabilité |
@@ -55,7 +56,7 @@
 | # | Description | Priorité |
 |---|---|---|
 | 1 | **Garde-fou « PC »** dans les instructions de séquenceur (actuellement seulement panneau + Équipement) | Basse |
-| 2 | **Icône du plugin dans la sidebar** du séquenceur (l'ExportMetadata "Icon" = "ButtonSVG" générique) | Basse |
+| 2 | ~~**Icône du plugin**~~ — ✅ fait en 1.5.0 (ShellyIcons.BuildPowerIcon construite en code, metadata Icon retirée ; icône du dockable corrigée — le carré blanc était un RectangleGeometry) | — |
 | 3 | **Mise à jour automatique du nom** des instructions quand une prise est renommée dans le panneau (actuellement au rechargement de la séquence) | Basse |
 
 ---
