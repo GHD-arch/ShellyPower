@@ -18,3 +18,4 @@ Thumbs.db
 Desktop.ini
 # Release artifacts (local staging)
 _release/
+_release_old/
