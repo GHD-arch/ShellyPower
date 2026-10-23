@@ -282,30 +282,50 @@ namespace NINA.ShellyPower
         }
 
         /// <summary>
-        /// Arme une EXTINCTION DIFFÉRÉE exécutée PAR LA PRISE (RPC Gen2+ : Switch.Set
-        /// on=false&toggle_after=N). La prise retient l'ordre et bascule seule après le
-        /// délai — l'ordinateur qui a envoyé la commande peut s'éteindre entre-temps.
+        /// Arme une EXTINCTION DIFFÉRÉE exécutée PAR LA PRISE (RPC Gen2+).
+        /// Pattern PROUVÉ sur PlusPlugS firmware 1.0.7 (tests minutés du 23/10) :
+        /// on=true (prise déjà allumée → aucun changement immédiat) + toggle_after=N
+        /// → bascule ON→OFF EXACTEMENT à l'échéance, exécutée par le matériel.
+        /// Les patterns alternatifs ont été écartés par les tests :
+        /// - on=false&toggle_after=N → coupure IMMÉDIATE puis re-ON à N s (pattern "restart")
+        /// - toggle=true&toggle_after=N → rejeté (-103 "Missing required argument 'on'")
+        /// - on=false&timer=N → coupure immédiate (timer sans effet)
+        /// L'appelant vérifie que la prise est ALLUMÉE avant d'appeler (précondition).
         /// VOLONTAIREMENT sans repli Gen1 : `/relay/0` n'a pas d'équivalent one-shot,
-        /// et une coupure immédiate silencieuse serait dangereuse pour ce scénario
-        /// (le PC serait coupé en pleine session). Renvoie false si non armée.
+        /// et une coupure immédiate silencieuse serait dangereuse pour ce scénario.
         /// </summary>
-        public async Task<bool> TurnOffDelayedAsync(string ip, int delaySeconds, CancellationToken ct = default)
+        public async Task<(bool Armed, string Detail)> ArmDelayedOffAsync(string ip, int delaySeconds, CancellationToken ct = default)
         {
             if (string.IsNullOrWhiteSpace(ip) || delaySeconds <= 0)
             {
-                return false;
+                return (false, ShellyStrings.L("IP vide ou délai invalide", "Empty IP or invalid delay"));
             }
 
             try
             {
-                // RPC d'abord : toggle_after n'existe que dans l'API Gen2+.
-                await _http.GetStringAsync($"http://{ip}/rpc/Switch.Set?id=0&on=false&toggle_after={delaySeconds}", ct);
-                return true;
+                // Pattern prouvé : on (déjà l'état courant, no-op) + flip différé de N s.
+                var url = $"http://{ip}/rpc/Switch.Set?id=0&on=true&toggle_after={delaySeconds}";
+                using (var resp = await _http.GetAsync(url, ct))
+                {
+                    var body = await resp.Content.ReadAsStringAsync(ct);
+                    if (resp.IsSuccessStatusCode)
+                    {
+                        var obj = (Newtonsoft.Json.Linq.JObject)Newtonsoft.Json.Linq.JToken.Parse(string.IsNullOrWhiteSpace(body) ? "{}" : body);
+                        var error = (string)obj["error"] ?? (string)obj["message"];
+                        if (!string.IsNullOrEmpty(error))
+                        {
+                            return (false, $"HTTP 200 avec rejet du firmware : {error}");
+                        }
+
+                        return (true, body);
+                    }
+
+                    return (false, $"HTTP {resp.StatusCode} : {body}");
+                }
             }
-            catch
+            catch (Exception ex)
             {
-                // 404/erreur = appareil Gen1 sans RPC : pas de minuteur one-shot côté prise.
-                return false;
+                return (false, ex.Message);
             }
         }
 

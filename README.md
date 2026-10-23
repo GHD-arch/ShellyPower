@@ -1,6 +1,6 @@
 ﻿# NINA.ShellyPower — NINA 3.x plugin for Shelly smart plugs
 
-**Version 1.6.0** · Author: **Gérard Hurtaud** · License: MIT
+**Version 1.6.1** · Author: **Gérard Hurtaud** · License: MIT
 · **GitHub**: https://github.com/GHD-arch/ShellyPower
 · NINA 3.0+ (tested 3.2.0.9001)
 

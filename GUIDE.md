@@ -1,6 +1,6 @@
 ﻿# NINA.ShellyPower — Manuel d'utilisation / User Guide
 
-**Version 1.6.0** · Auteur / Author: **Gérard Hurtaud** · Licence / License: MIT
+**Version 1.6.1** · Auteur / Author: **Gérard Hurtaud** · Licence / License: MIT
 · **GitHub** : https://github.com/GHD-arch/ShellyPower
 · NINA 3.0+ (testé / tested 3.2.0.9001)
 
@@ -83,6 +83,7 @@ toute seule après le délai. L'ordinateur qui a envoyé la commande peut s'éte
 sans être coupé brutalement. Le minuteur tourne dans le matériel : ni NINA, ni le réseau,
 ni le PC ne sont requis à l'échéance.
 
+Détail firmware (testé et prouvé sur PlusPlugS 1.0.7) : l'armement n'applique RIEN immédiatement ; le flip ON→OFF tombe exactement à l'échéance. Si la prise est recoupée manuellement avant, le flip la rallumera — ne pas la recouper entre-temps.
 Séquence typique de fin de nuit : `[Shelly Power Delayed Off → PC, 120 s]` puis l'arrêt du PC —
 le PC s'éteint en ~1 min, la prise coupe à 120 s. Si la prise ne supporte pas ce mode (Gen1
 sans minuteur), l'instruction échoue avec un message explicite et **aucune coupure n'est armée**.
@@ -94,6 +95,7 @@ itself off after the delay. The computer that launched the command can shut down
 without being cut abruptly. The timer runs in the hardware: neither NINA, nor the network,
 nor the PC are needed at deadline.
 
+Firmware detail (proven on PlusPlugS 1.0.7): arming applies NOTHING immediately; the ON-to-OFF flip lands exactly at the deadline. If the plug is switched off manually before that, the flip turns it back on - do not switch it off in between.
 Typical end-of-night sequence: `[Shelly Power Delayed Off → PC, 120 s]` then the PC shutdown —
 the PC goes off in ~1 min, the plug cuts power at 120 s. If the plug does not support this
 mode (Gen1 without timer), the instruction fails with an explicit message and **nothing is armed**.
@@ -197,6 +199,7 @@ toute seule après le délai. L'ordinateur qui a envoyé la commande peut s'éte
 sans être coupé brutalement. Le minuteur tourne dans le matériel : ni NINA, ni le réseau,
 ni le PC ne sont requis à l'échéance.
 
+Détail firmware (testé et prouvé sur PlusPlugS 1.0.7) : l'armement n'applique RIEN immédiatement ; le flip ON→OFF tombe exactement à l'échéance. Si la prise est recoupée manuellement avant, le flip la rallumera — ne pas la recouper entre-temps.
 Séquence typique de fin de nuit : `[Shelly Power Delayed Off → PC, 120 s]` puis l'arrêt du PC —
 le PC s'éteint en ~1 min, la prise coupe à 120 s. Si la prise ne supporte pas ce mode (Gen1
 sans minuteur), l'instruction échoue avec un message explicite et **aucune coupure n'est armée**.
@@ -208,6 +211,7 @@ itself off after the delay. The computer that launched the command can shut down
 without being cut abruptly. The timer runs in the hardware: neither NINA, nor the network,
 nor the PC are needed at deadline.
 
+Firmware detail (proven on PlusPlugS 1.0.7): arming applies NOTHING immediately; the ON-to-OFF flip lands exactly at the deadline. If the plug is switched off manually before that, the flip turns it back on - do not switch it off in between.
 Typical end-of-night sequence: `[Shelly Power Delayed Off → PC, 120 s]` then the PC shutdown —
 the PC goes off in ~1 min, the plug cuts power at 120 s. If the plug does not support this
 mode (Gen1 without timer), the instruction fails with an explicit message and **nothing is armed**.
@@ -239,4 +243,4 @@ The interface is **English by default**; it switches to **French** when NINA's U
 
 ---
 
-*Auteur / Author: Gérard Hurtaud · GitHub: [GHD-arch/ShellyPower](https://github.com/GHD-arch/ShellyPower) · Version 1.6.0 · octobre 2026*
+*Auteur / Author: Gérard Hurtaud · GitHub: [GHD-arch/ShellyPower](https://github.com/GHD-arch/ShellyPower) · Version 1.6.1 · octobre 2026*

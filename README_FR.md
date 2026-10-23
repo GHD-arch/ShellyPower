@@ -1,6 +1,6 @@
 ﻿# NINA.ShellyPower — Plugin NINA 3.x pour prises connectées Shelly
 
-**Version 1.6.0** · Auteur : **Gérard Hurtaud** · Licence : MIT
+**Version 1.6.1** · Auteur : **Gérard Hurtaud** · Licence : MIT
 · **GitHub** : https://github.com/GHD-arch/ShellyPower
 · NINA 3.0+ (testé 3.2.0.9001)
 

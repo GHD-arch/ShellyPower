@@ -1,6 +1,6 @@
 ﻿# AFAIRE — Améliorations futures et versionning
 
-**Projet** : NINA.ShellyPower · **Version actuelle** : 1.6.0 · **Auteur** : Gérard Hurtaud
+**Projet** : NINA.ShellyPower · **Version actuelle** : 1.6.1 · **Auteur** : Gérard Hurtaud
 **Date** : 3 septembre 2026 · **GitHub** : https://github.com/GHD-arch/ShellyPower
 
 ---
@@ -16,6 +16,7 @@
 | **1.4.0** | ✅ Livrée | Instruction « Shelly Power Wait » + correctif skip silencieux |
 | **1.5.0** | ✅ Livrée | Condition While, Toggle, déclencheur Unsafe, icône, correctifs affichage, GUIDE + LICENSE + .gitignore |
 | **1.6.0** | ✅ Actuelle | Extinction différée exécutée par la prise (toggle_after) — le PC peut s'éteindre avant |
+| **1.6.1** | ✅ Actuelle | Correctif sémantiques firmware : pattern restart corrigé, armement prouvé (on=true + toggle_after), diagnostics firmware dans le log |
 | 1.6.0 | Planifié | Fonctionnalités restantes (voir ci-dessous) |
 | 2.0.0 | Planifié | Publication galerie NINA (voir ci-dessous) |
 

@@ -122,16 +122,16 @@ namespace NINA.ShellyPower
                 $"… armement de l'extinction différée de '{plugName}' ({DelaySeconds} s)",
                 $"… arming delayed power-off of '{plugName}' ({DelaySeconds} s)") });
 
-            var armed = await client.TurnOffDelayedAsync(ip, DelaySeconds, token);
+            var (armed, detail) = await client.ArmDelayedOffAsync(ip, DelaySeconds, token);
             if (!armed)
             {
                 // Surtout pas de coupure immédiate en repli : dangereux pour ce scénario.
                 var errorMessage = ShellyStrings.L(
-                    $"La prise '{plugName}' ({ip}) ne supporte pas l'extinction différée (API Gen1 sans minuteur one-shot). Aucune coupure armée — ne pas éteindre l'ordinateur.",
-                    $"Plug '{plugName}' ({ip}) does not support delayed power-off (Gen1 API has no one-shot timer). Nothing armed — do not shut down the computer.");
+                    $"L'extinction différée n'a pas pu être armée sur '{plugName}' ({ip}). Aucune coupure armée — ne pas éteindre l'ordinateur avant d'avoir résolu ce point.",
+                    $"Delayed power-off could not be armed on '{plugName}' ({ip}). Nothing armed — do not shut down the computer before resolving this.");
                 Notification.ShowError(errorMessage);
-                Logger.Error("Shelly Power Delayed Off: " + errorMessage);
-                throw new InvalidOperationException(errorMessage);
+                Logger.Error($"Shelly Power Delayed Off: {errorMessage} — réponse du firmware : {detail ?? "(aucune)"}");
+                throw new InvalidOperationException(errorMessage + " [" + (detail ?? "?") + "]");
             }
 
             var message = ShellyStrings.L(

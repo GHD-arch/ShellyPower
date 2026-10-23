@@ -1,10 +1,23 @@
 ﻿# DIGEST — Historique de développement du plugin Shelly Power
 
-**Projet** : NINA.ShellyPower · **Version** : 1.6.0 · **Auteur** : Gérard Hurtaud
+**Projet** : NINA.ShellyPower · **Version** : 1.6.1 · **Auteur** : Gérard Hurtaud
 **Date** : 28 août 2026 · **NINA** : 3.2.0.9001 · **SDK** : .NET 8.0.424
 **GitHub** : https://github.com/GHD-arch/ShellyPower
 
-## Mises à jour — Version 1.6.0 (octobre 2026)
+## Mises à jour — Version 1.6.1 (23 octobre 2026)
+
+- **Correctif sémantiques firmware (Delayed Off)** — prouvé par tests minutés sur
+  PlusPlugS firmware 1.0.7 (prise branchée sur lampe, sondes 3 s) :
+  - "on=false&toggle_after=N" : coupure IMMÉDIATE puis re-ON à N s (pattern "restart") ;
+  - "toggle=true&toggle_after=N" : rejeté (code -103 "Missing required argument on") ;
+  - "on=false&timer=N" : accepté (réponse was_on:true) mais coupure immédiate (timer sans effet) ;
+  - **"on=true&toggle_after=N"** (prise allumée) : aucun changement à l'armeent, flip
+    ON→OFF EXACTEMENT à l'échéance (t+20 s mesurés) — pattern adopté.
+- Le client (ArmDelayedOffAsync) capture la réponse EXACTE du firmware (code HTTP + corps)
+  dans le message d'erreur — diagnostic fiable pour de futurs firmwares.
+- Fonctionnel : validé par l'utilisateur (prise coupée à l'échéance avec NINA fermé).
+
+$marker
 
 - **Instruction « Shelly Power Delayed Off »** : extinction différée exécutée PAR LA PRISE
   (RPC Gen2+ : Switch.Set on=false&toggle_after=N). Le minuteur tourne dans le matériel de

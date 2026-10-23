@@ -1,0 +1,15 @@
+{
+  "Name": "Shelly Power",
+  "Author": "Gérard Hurtaud",
+  "Version": "1.5",
+  "Description": "Control up to 4 Shelly smart plugs from NINA: switch hub with power meters, sequencer instructions (On, Off, Wait, Toggle, While condition, Unsafe trigger), network auto-detection, safety protections and bilingual UI.",
+  "Tags": [ "Power", "Switch", "Shelly" ],
+  "License": "MIT",
+  "Homepage": "https://github.com/GHD-arch/ShellyPower",
+  "Repository": "https://github.com/GHD-arch/ShellyPower",
+  "DownloadURL": "https://github.com/GHD-arch/ShellyPower/releases/download/v1.5.0/NINA.ShellyPower.zip",
+  "DownloadChecksum": "B3466625F44773A79095E7359340CEDD7778A0CC1C89AA6E332C221DFEBA98F6",
+  "MinimumApplicationVersion": "3.0",
+  "MinimumOSVersion": "10.0",
+  "AssemblyName": "NINA.ShellyPower.dll"
+}
