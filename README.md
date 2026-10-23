@@ -1,6 +1,6 @@
 ﻿# NINA.ShellyPower — NINA 3.x plugin for Shelly smart plugs
 
-**Version 1.5.0** · Author: **Gérard Hurtaud** · License: MIT
+**Version 1.6.0** · Author: **Gérard Hurtaud** · License: MIT
 · **GitHub**: https://github.com/GHD-arch/ShellyPower
 · NINA 3.0+ (tested 3.2.0.9001)
 
@@ -24,6 +24,8 @@ Plugin for **NINA** (Nighttime Imaging 'N' Astronomy) to control **Shelly smart 
 6. **Accidental power-off protection** — confirmation is requested before any manual
    power-off (Equipment toggle, panel OFF button). The sequencer is **not** affected
    (night-time automation preserved).
+9. **Delayed power-off** — arms the plug itself to switch off after a configurable delay
+   (RPC toggle_after): the computer that launched the command can shut down first.
 7. **Sequencer automation kit** — six entities: On, Off, **Wait** (wait for state with
    timeout), **Toggle** (timed toggle then restore), **While** (run-while condition with
    watchdog), **Unsafe** (safety-trigger cut-off on safety monitor unsafe).

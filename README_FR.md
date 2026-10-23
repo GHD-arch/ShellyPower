@@ -1,6 +1,6 @@
 ﻿# NINA.ShellyPower — Plugin NINA 3.x pour prises connectées Shelly
 
-**Version 1.5.0** · Auteur : **Gérard Hurtaud** · Licence : MIT
+**Version 1.6.0** · Auteur : **Gérard Hurtaud** · Licence : MIT
 · **GitHub** : https://github.com/GHD-arch/ShellyPower
 · NINA 3.0+ (testé 3.2.0.9001)
 
@@ -26,6 +26,8 @@ chacune avec son adresse IP.
 6. **Protection anti-coupure** — confirmation demandée avant toute extinction manuelle
    (toggle Équipement, bouton OFF du panneau). Le séquenceur n'est **pas** concerné
    (automatisation nocturne préservée).
+9. **Extinction différée** — arme la prise elle-même pour qu'elle s'éteigne après un délai
+   configurable (RPC toggle_after) : l'ordinateur qui lance la commande peut s'éteindre avant.
 7. **Kit d'automatisation séquenceur** — six entités : On, Off, **Attendre** (attendre un
    état avec délai), **Toggle** (bascule temporisée puis retour), **While** (condition
    tant-que avec watchdog), **Unsafe** (déclencheur de coupure sur safety monitor).

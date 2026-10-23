@@ -1,8 +1,20 @@
 ﻿# DIGEST — Historique de développement du plugin Shelly Power
 
-**Projet** : NINA.ShellyPower · **Version** : 1.5.0 · **Auteur** : Gérard Hurtaud
+**Projet** : NINA.ShellyPower · **Version** : 1.6.0 · **Auteur** : Gérard Hurtaud
 **Date** : 28 août 2026 · **NINA** : 3.2.0.9001 · **SDK** : .NET 8.0.424
 **GitHub** : https://github.com/GHD-arch/ShellyPower
+
+## Mises à jour — Version 1.6.0 (octobre 2026)
+
+- **Instruction « Shelly Power Delayed Off »** : extinction différée exécutée PAR LA PRISE
+  (RPC Gen2+ : Switch.Set on=false&toggle_after=N). Le minuteur tourne dans le matériel de
+  la prise — l'ordinateur qui lance la commande peut s'éteindre avant l'échéance (séquence
+  typique : Delayed Off 120 s puis arrêt du PC). Notification + log à l'armement.
+- Sécurité : aucun repli silencieux — si la prise ne supporte pas toggle_after (Gen1 sans
+  RPC), l'instruction échoue avec un message explicite « ne pas éteindre l'ordinateur » et
+  rien n'est armé.
+- Prise déjà éteinte : message dédié, rien à armer.
+- AFAIRE : table 1.6.0 nettoyée, canaux multi-sorties (Power Strip 4 Gen4) notés en attente.
 
 ## Mises à jour — Version 1.5.0 (7 septembre 2026)
 

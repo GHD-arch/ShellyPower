@@ -1,4 +1,4 @@
-<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sp="clr-namespace:NINA.ShellyPower"
                     xmlns:view="clr-namespace:NINA.View.Sequencer;assembly=NINA.Sequencer"
@@ -109,6 +109,29 @@
         </view:SequenceBlockView>
     </DataTemplate>
 
+    <!--
+      Editeur de l'instruction "Extinction differee executee par la prise" : le minuteur
+      tourne DANS LA PRISE (RPC toggle_after) — le PC qui a envoye la commande peut
+      s'eteindre avant l'echeance. Ne pas confondre avec Toggle+Waiting : ici la durree
+      tourne sur la prise, pas dans NINA.
+    -->
+    <DataTemplate DataType="{x:Type sp:ShellyPowerDelayedOffInstruction}">
+        <view:SequenceBlockView>
+            <view:SequenceBlockView.SequenceItemContent>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                    <TextBlock Text="Prise :" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <ComboBox Width="140" VerticalAlignment="Center"
+                              ItemsSource="{Binding PlugNames}"
+                              SelectedIndex="{Binding SelectedPlugIndex, Mode=TwoWay}"
+                              ToolTip="Prise a eteindre (extinction executee par la prise elle-meme)"/>
+                    <TextBlock Text="Delai (s) :" VerticalAlignment="Center" Margin="10,0,6,0"/>
+                    <TextBox Width="60" VerticalAlignment="Center"
+                             Text="{Binding DelaySeconds, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             ToolTip="La prise s'eteindra toute seule apres ce delai (le PC peut etre arrete avant)"/>
+                </StackPanel>
+            </view:SequenceBlockView.SequenceItemContent>
+        </view:SequenceBlockView>
+    </DataTemplate>
     <!--
       Editeur de la condition "Shelly Power While" : le bloc s'execute TANT QUE la prise
       est dans l'etat choisi (interrupt via ConditionWatchdog des que l'etat change).
@@ -244,4 +267,16 @@
         </mini:MiniSequenceItem>
     </DataTemplate>
 
+    <DataTemplate x:Key="NINA.ShellyPower.ShellyPowerDelayedOffInstruction_Mini">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+            <TextBlock Text="OFF-IN" FontWeight="Bold" Foreground="#FFEF5350"
+                       VerticalAlignment="Center" Margin="0,0,6,0"/>
+            <ComboBox MinWidth="110" VerticalAlignment="Center"
+                      ItemsSource="{Binding PlugNames}"
+                      SelectedIndex="{Binding SelectedPlugIndex, Mode=TwoWay}"/>
+            <TextBlock Text="s" VerticalAlignment="Center" Margin="6,0,2,0"/>
+            <TextBox Width="45" VerticalAlignment="Center"
+                     Text="{Binding DelaySeconds, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        </StackPanel>
+    </DataTemplate>
 </ResourceDictionary>

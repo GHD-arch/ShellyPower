@@ -1,6 +1,6 @@
 ﻿# NINA.ShellyPower — Manuel d'utilisation / User Guide
 
-**Version 1.5.0** · Auteur / Author: **Gérard Hurtaud** · Licence / License: MIT
+**Version 1.6.0** · Auteur / Author: **Gérard Hurtaud** · Licence / License: MIT
 · **GitHub** : https://github.com/GHD-arch/ShellyPower
 · NINA 3.0+ (testé / tested 3.2.0.9001)
 
@@ -75,6 +75,28 @@ Interroge la prise toutes les 2 s jusqu'à l'état attendu, au plus tard le dél
 
 Idéal pour « allumer le déwarmer 10 min pendant les flats puis revenir comme avant ».
 
+### Shelly Power Delayed Off — extinction différée exécutée par la prise
+> `Prise : [▼ PC] Délai (s) : [120]`
+
+Arme le minuteur **dans la prise** (RPC `toggle_after`) : la prise retient l'ordre et s'éteint
+toute seule après le délai. L'ordinateur qui a envoyé la commande peut s'éteindre entre-temps
+sans être coupé brutalement. Le minuteur tourne dans le matériel : ni NINA, ni le réseau,
+ni le PC ne sont requis à l'échéance.
+
+Séquence typique de fin de nuit : `[Shelly Power Delayed Off → PC, 120 s]` puis l'arrêt du PC —
+le PC s'éteint en ~1 min, la prise coupe à 120 s. Si la prise ne supporte pas ce mode (Gen1
+sans minuteur), l'instruction échoue avec un message explicite et **aucune coupure n'est armée**.
+### Shelly Power Delayed Off — plug-executed delayed power-off
+> `Plug: [▼ PC] Delay (s): [120]`
+
+Arms the timer **in the plug** (RPC `toggle_after`): the plug remembers the order and switches
+itself off after the delay. The computer that launched the command can shut down in between
+without being cut abruptly. The timer runs in the hardware: neither NINA, nor the network,
+nor the PC are needed at deadline.
+
+Typical end-of-night sequence: `[Shelly Power Delayed Off → PC, 120 s]` then the PC shutdown —
+the PC goes off in ~1 min, the plug cuts power at 120 s. If the plug does not support this
+mode (Gen1 without timer), the instruction fails with an explicit message and **nothing is armed**.
 ### Shelly Power While — condition
 > `Prise : [▼ Alimentation] [▼ OFF/ON]`
 
@@ -167,6 +189,28 @@ Polls the plug every 2 s until it reaches the wanted state, at most for the conf
 
 Ideal for « run the dew heater 10 minutes during flats, then restore as before ».
 
+### Shelly Power Delayed Off — extinction différée exécutée par la prise
+> `Prise : [▼ PC] Délai (s) : [120]`
+
+Arme le minuteur **dans la prise** (RPC `toggle_after`) : la prise retient l'ordre et s'éteint
+toute seule après le délai. L'ordinateur qui a envoyé la commande peut s'éteindre entre-temps
+sans être coupé brutalement. Le minuteur tourne dans le matériel : ni NINA, ni le réseau,
+ni le PC ne sont requis à l'échéance.
+
+Séquence typique de fin de nuit : `[Shelly Power Delayed Off → PC, 120 s]` puis l'arrêt du PC —
+le PC s'éteint en ~1 min, la prise coupe à 120 s. Si la prise ne supporte pas ce mode (Gen1
+sans minuteur), l'instruction échoue avec un message explicite et **aucune coupure n'est armée**.
+### Shelly Power Delayed Off — plug-executed delayed power-off
+> `Plug: [▼ PC] Delay (s): [120]`
+
+Arms the timer **in the plug** (RPC `toggle_after`): the plug remembers the order and switches
+itself off after the delay. The computer that launched the command can shut down in between
+without being cut abruptly. The timer runs in the hardware: neither NINA, nor the network,
+nor the PC are needed at deadline.
+
+Typical end-of-night sequence: `[Shelly Power Delayed Off → PC, 120 s]` then the PC shutdown —
+the PC goes off in ~1 min, the plug cuts power at 120 s. If the plug does not support this
+mode (Gen1 without timer), the instruction fails with an explicit message and **nothing is armed**.
 ### Shelly Power While — condition
 > `Plug: [▼ Power] [▼ OFF/ON]`
 
@@ -195,4 +239,4 @@ The interface is **English by default**; it switches to **French** when NINA's U
 
 ---
 
-*Auteur / Author: Gérard Hurtaud · GitHub: [GHD-arch/ShellyPower](https://github.com/GHD-arch/ShellyPower) · Version 1.5.0 · 7 septembre 2026*
+*Auteur / Author: Gérard Hurtaud · GitHub: [GHD-arch/ShellyPower](https://github.com/GHD-arch/ShellyPower) · Version 1.6.0 · octobre 2026*

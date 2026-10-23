@@ -18,7 +18,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Shelly Power")]
 [assembly: AssemblyCompany("Gérard Hurtaud")]
 [assembly: AssemblyDescription("Control Shelly smart plugs (4 named plugs) from NINA.")]
-[assembly: AssemblyFileVersion("1.5.0.0")]
+[assembly: AssemblyFileVersion("1.6.0.0")]
 
 [assembly: AssemblyMetadata("License", "MIT")]
 [assembly: AssemblyMetadata("LicenseURL", "https://opensource.org/licenses/MIT")]

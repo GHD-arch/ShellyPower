@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -279,6 +279,34 @@ namespace NINA.ShellyPower
 
             var status = await GetStatusAsync(ip, true, ct);
             return status.IsOn ?? false;
+        }
+
+        /// <summary>
+        /// Arme une EXTINCTION DIFFÉRÉE exécutée PAR LA PRISE (RPC Gen2+ : Switch.Set
+        /// on=false&toggle_after=N). La prise retient l'ordre et bascule seule après le
+        /// délai — l'ordinateur qui a envoyé la commande peut s'éteindre entre-temps.
+        /// VOLONTAIREMENT sans repli Gen1 : `/relay/0` n'a pas d'équivalent one-shot,
+        /// et une coupure immédiate silencieuse serait dangereuse pour ce scénario
+        /// (le PC serait coupé en pleine session). Renvoie false si non armée.
+        /// </summary>
+        public async Task<bool> TurnOffDelayedAsync(string ip, int delaySeconds, CancellationToken ct = default)
+        {
+            if (string.IsNullOrWhiteSpace(ip) || delaySeconds <= 0)
+            {
+                return false;
+            }
+
+            try
+            {
+                // RPC d'abord : toggle_after n'existe que dans l'API Gen2+.
+                await _http.GetStringAsync($"http://{ip}/rpc/Switch.Set?id=0&on=false&toggle_after={delaySeconds}", ct);
+                return true;
+            }
+            catch
+            {
+                // 404/erreur = appareil Gen1 sans RPC : pas de minuteur one-shot côté prise.
+                return false;
+            }
         }
 
         /// <summary>
